@@ -1,0 +1,11 @@
+.DS_Store
+stacktrace.log
+target
+*.class
+.idea
+*.jasper
+*.jrxml
+web-app/WEB-INF/classes
+*.orig
+CodeNarcReport.html
+/.settings/
