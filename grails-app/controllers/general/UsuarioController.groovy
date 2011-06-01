@@ -1,8 +1,10 @@
 package general
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
+@Secured(['ROLE_EMP'])
 class UsuarioController {
 
     def springSecurityService

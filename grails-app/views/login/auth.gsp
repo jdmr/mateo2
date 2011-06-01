@@ -13,7 +13,7 @@
 	padding:10px;
 	border-top:1px dashed #499ede;
 	border-bottom:1px dashed #499ede;
-	background-color:#EEF;
+	background-color:#abbf78;
 }
 #login .inner .fheader {
 	padding:4px;margin:3px 0px 3px 0;color:#2e3741;font-size:14px;font-weight:bold;
@@ -48,23 +48,23 @@
 			<g:if test='${flash.message}'>
 			<div class='login_message'>${flash.message}</div>
 			</g:if>
-			<div class='fheader'>Please Login..</div>
+			<div class='fheader'><g:message code="auth.login.message" /></div>
 			<form action='${postUrl}' method='POST' id='loginForm' class='cssform' autocomplete='off'>
 				<p>
-					<label for='username'>Login ID</label>
+                <label for='username'><g:message code="usuario.username.label" /></label>
 					<input type='text' class='text_' name='j_username' id='username' />
 				</p>
 				<p>
-					<label for='password'>Password</label>
+                <label for='password'><g:message code="usuario.password.label" /></label>
 					<input type='password' class='text_' name='j_password' id='password' />
 				</p>
 				<p>
-					<label for='remember_me'>Remember me</label>
+                <label for='remember_me'><g:message code="auth.rememberme.label" /></label>
 					<input type='checkbox' class='chk' name='${rememberMeParameter}' id='remember_me'
 					<g:if test='${hasCookie}'>checked='checked'</g:if> />
 				</p>
 				<p>
-					<input type='submit' value='Login' />
+                <input type='submit' value='<g:message code="auth.login.button" />' />
 				</p>
 			</form>
 		</div>
