@@ -47,6 +47,21 @@ body {
 	background-color: #abbf78;
 }
 
+.encabezado a {
+    margin: 0 !important;
+}
+
+#logo {
+    float: left;
+}
+
+.encabezado {
+    height: 80px;
+    margin-right: 5px;
+    margin-top: 5px;
+    text-align: right;
+}
+
 /* replace with .no-boxshadow body if you have modernizr available */
 .ie6 body,
 .ie7 body,

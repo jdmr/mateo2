@@ -17,7 +17,17 @@
 		<g:layoutHead/>
 	</head>
 	<body>
-		<div id="grailsLogo" role="banner"><a href="${createLink(uri: '/')}"><img src="${resource(dir: 'images', file: 'grails_logo.png')}" alt="Grails"/></a></div>
+        <div id="grailsLogo" role="banner">
+            <div id="logo">
+                <a href="${createLink(uri: '/')}"><img src="${resource(dir: 'images', file: 'grails_logo.png')}" alt="Grails"/></a>
+            </div>
+            <div class="encabezado">
+                <sec:ifLoggedIn>
+                    <p><g:message code="welcome.header.message" /> <sec:loggedInUserInfo field="username" /></p>
+                    <p><a href="${createLink(controller:'logout')}"><g:message code="logout.header.message" /></a></p>
+                </sec:ifLoggedIn>
+            </div>
+        </div>
 		<g:layoutBody/>
 		<div class="footer" role="contentinfo"></div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
