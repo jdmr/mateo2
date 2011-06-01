@@ -72,7 +72,7 @@
 				<li class="fieldcontain">
 					<span id="accountLocked-label" class="property-label"><g:message code="usuario.accountLocked.label" default="Account Locked" /></span>
 					
-						<span class="property-value" aria-labelledby="accountLocked-label"><g:checkBox name="accountExpired" value="${usuario?.accountLocked}" disabled="true" /></span>
+						<span class="property-value" aria-labelledby="accountLocked-label"><g:checkBox name="accountLocked" value="${usuario?.accountLocked}" disabled="true" /></span>
 					
 				</li>
 				</g:if>
@@ -81,7 +81,7 @@
 				<li class="fieldcontain">
 					<span id="enabled-label" class="property-label"><g:message code="usuario.enabled.label" default="Enabled" /></span>
 					
-						<span class="property-value" aria-labelledby="enabled-label"><g:checkBox name="accountExpired" value="${usuario?.enabled}" disabled="true" /></span>
+						<span class="property-value" aria-labelledby="enabled-label"><g:checkBox name="enabled" value="${usuario?.enabled}" disabled="true" /></span>
 					
 				</li>
 				</g:if>
@@ -90,10 +90,23 @@
 				<li class="fieldcontain">
 					<span id="passwordExpired-label" class="property-label"><g:message code="usuario.passwordExpired.label" default="Password Expired" /></span>
 					
-						<span class="property-value" aria-labelledby="passwordExpired-label"><g:checkBox name="accountExpired" value="${usuario?.passwordExpired}" disabled="true" /></span>
+						<span class="property-value" aria-labelledby="passwordExpired-label"><g:checkBox name="passwordExpired" value="${usuario?.passwordExpired}" disabled="true" /></span>
 					
 				</li>
 				</g:if>
+
+                <g:if test="${roles}">
+                    <li class="fieldcontain">
+                        <span id="authorities-label" class="property-label"><g:message code="usuario.authorities.label" default="Authorities" /></span>
+                        
+                        <span class="property-value" aria-labelledby="authorities-label">
+                            <g:each var="entry" in="${roles}">
+                                <g:checkBox disabled="true" name="${entry.key.authority}" value="${entry.value}"/> ${entry.key.authority}<br/>
+                            </g:each>
+                        </span>
+                        
+                    </li>
+                </g:if>
 			
 			</ol>
 			<g:form>

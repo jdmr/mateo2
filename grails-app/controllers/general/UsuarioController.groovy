@@ -1,6 +1,7 @@
 package general
 
 import grails.converters.JSON
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class UsuarioController {
 
@@ -20,7 +21,10 @@ class UsuarioController {
     def nuevo = {
         def usuario = new Usuario()
         usuario.properties = params
-        return [usuario: usuario]
+
+        def roles = obtieneListaDeRoles(null)
+
+        return [usuario: usuario, roles: roles]
     }
 
     def crea = {
@@ -43,7 +47,9 @@ class UsuarioController {
             redirect(action: "lista")
         }
         else {
-            [usuario: usuario]
+            def roles = test(usuario)
+
+            return [usuario: usuario, roles: roles]
         }
     }
 
@@ -54,7 +60,9 @@ class UsuarioController {
             redirect(action: "lista")
         }
         else {
-            return [usuario: usuario]
+            def roles = obtieneListaDeRoles(usuario)
+
+            return [usuario: usuario, roles: roles]
         }
     }
 
@@ -108,4 +116,39 @@ class UsuarioController {
             redirect(action: "lista")
         }
     }
+
+    Map obtieneListaDeRoles(Usuario usuario) {
+        def roles = Rol.list()
+
+        def rolesFiltrados = [] as Set
+        //def creador = usuarioService.obtiene(springSecurityService.principal().id)
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            rolesFiltrados = roles
+        } else if(SpringSecurityUtils.ifAnyGranted('ROLE_ORG')) {
+            for(rol in roles) {
+                if (!rol.authority.equals('ROL_ADMIN') && !rol.authority.equals('ROL_ORG')) {
+                    rolesFiltrados << rol
+                }
+            }
+        } else if(SpringSecurityUtils.ifAnyGranted('ROLE_EMP')) {
+            for(rol in roles) {
+                if (rol.authority.equals('ROL_USER')) {
+                    rolesFiltrados << rol
+                }
+            }
+        }
+        roles.sort { r1, r2 ->
+            r1.authority <=> r2.authority
+        }
+        Set userRoleNames = []
+        for (role in usuario?.authorities) {
+            userRoleNames << role.authority
+        }
+        LinkedHashMap<Rol, Boolean> roleMap = [:]
+        for (role in roles) {
+            roleMap[(role)] = userRoleNames.contains(role.authority)
+        }
+        return roleMap
+    }
+
 }

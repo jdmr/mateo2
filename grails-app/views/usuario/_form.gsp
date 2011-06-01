@@ -74,3 +74,14 @@
 	<g:checkBox name="passwordExpired" value="${usuario?.passwordExpired}" />
 </div>
 
+<g:if test="${roles}">
+    <div class="fieldcontain ${hasErrors(bean: usuario, field: 'authorities', 'error')} ">
+        <label for="passwordExpired">
+            <g:message code="usuario.authorities.label" default="Authorities" />
+            
+        </label>
+        <g:each var="entry" in="${roles}">
+            <g:checkBox name="${entry.key.authority}" value="${entry.value}"/> ${entry.key.authority}<br/>
+        </g:each>
+    </div>
+</g:if>
