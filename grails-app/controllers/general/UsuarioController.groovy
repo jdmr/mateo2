@@ -28,15 +28,29 @@ class UsuarioController {
     }
 
     def crea = {
-        def usuario = new Usuario(params)
-        usuario.password = springSecurityService.encodePassword(params.password)
-        if (usuario.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'usuario.label', default: 'Usuario'), usuario.username])
-            redirect(action: "ver", id: usuario.id)
-        }
-        else {
-            log.error("Hubo un error al crear el usuario ${usuario.errors}")
-            render(view: "crea", model: [usuario: usuario])
+        Usuario.withTransaction {
+            def usuario = new Usuario(params)
+            usuario.password = springSecurityService.encodePassword(params.password)
+            if (usuario.save(flush: true)) {
+                def roles = [] as Set
+                if (params.ROLE_ADMIN) {
+                    roles << Rol.findByAuthority('ROLE_ADMIN')
+                } else if (params.ROLE_ORG) {
+                    roles << Rol.findByAuthority('ROLE_ORG')
+                } else if (params.ROLE_EMP) {
+                    roles << Rol.findByAuthority('ROLE_EMP')
+                } else {
+                    roles << Rol.findByAuthority('ROLE_USER')
+                }
+                for(rol in roles) {
+                    UsuarioRol.create(usuario, rol, false)
+                }
+                flash.message = message(code: 'default.created.message', args: [message(code: 'usuario.label', default: 'Usuario'), usuario.username])
+                redirect(action: "ver", id: usuario.id)
+            } else {
+                log.error("Hubo un error al crear el usuario ${usuario.errors}")
+                render(view: "crea", model: [usuario: usuario])
+            }
         }
     }
 
@@ -47,7 +61,7 @@ class UsuarioController {
             redirect(action: "lista")
         }
         else {
-            def roles = test(usuario)
+            def roles = obtieneListaDeRoles(usuario)
 
             return [usuario: usuario, roles: roles]
         }
@@ -67,33 +81,49 @@ class UsuarioController {
     }
 
     def actualiza = {
-        def usuario = Usuario.get(params.id)
-        if (usuario) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (usuario.version > version) {
-                    
-                    usuario.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'usuario.label', default: 'Usuario')] as Object[], "Another user has updated this Usuario while you were editing")
+        Usuario.withTransaction {
+            def usuario = Usuario.get(params.id)
+            if (usuario) {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (usuario.version > version) {
+                        
+                        usuario.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'usuario.label', default: 'Usuario')] as Object[], "Another user has updated this Usuario while you were editing")
+                        render(view: "edita", model: [usuario: usuario])
+                        return
+                    }
+                }
+                if (usuario.password != params.password) {
+                    usuario.password = springSecurityService.encodePassword(params.password)
+                }
+                params.remove('password')
+                usuario.properties = params
+                if (!usuario.hasErrors() && usuario.save(flush: true)) {
+                    def roles = [] as Set
+                    if (params.ROLE_ADMIN) {
+                        roles << Rol.findByAuthority('ROLE_ADMIN')
+                    } else if (params.ROLE_ORG) {
+                        roles << Rol.findByAuthority('ROLE_ORG')
+                    } else if (params.ROLE_EMP) {
+                        roles << Rol.findByAuthority('ROLE_EMP')
+                    } else {
+                        roles << Rol.findByAuthority('ROLE_USER')
+                    }
+                    UsuarioRol.removeAll(usuario)
+                    for(rol in roles) {
+                        UsuarioRol.create(usuario, rol, false)
+                    }
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'usuario.label', default: 'Usuario'), usuario.username])
+                    redirect(action: "ver", id: usuario.id)
+                }
+                else {
                     render(view: "edita", model: [usuario: usuario])
-                    return
                 }
             }
-            if (usuario.password != params.password) {
-                usuario.password = springSecurityService.encodePassword(params.password)
-            }
-            params.remove('password')
-            usuario.properties = params
-            if (!usuario.hasErrors() && usuario.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'usuario.label', default: 'Usuario'), usuario.username])
-                redirect(action: "ver", id: usuario.id)
-            }
             else {
-                render(view: "edita", model: [usuario: usuario])
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'usuario.label', default: 'Usuario'), params.id])
+                redirect(action: "lista")
             }
-        }
-        else {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'usuario.label', default: 'Usuario'), params.id])
-            redirect(action: "lista")
         }
     }
 
@@ -102,6 +132,7 @@ class UsuarioController {
         if (usuario) {
             try {
                 def nombre = usuario.username
+                UsuarioRol.removeAll(usuario)
                 usuario.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'usuario.label', default: 'Usuario'), nombre])
                 redirect(action: "lista")
@@ -117,7 +148,7 @@ class UsuarioController {
         }
     }
 
-    Map obtieneListaDeRoles(Usuario usuario) {
+    def obtieneListaDeRoles = { usuario ->
         def roles = Rol.list()
 
         def rolesFiltrados = [] as Set
@@ -151,4 +182,17 @@ class UsuarioController {
         return roleMap
     }
 
+    def asignaRoles = { params ->
+        def roles = [] as Set
+        if (params.ROLE_ADMIN) {
+            roles << Rol.findByAuthority('ROLE_ADMIN')
+        } else if (params.ROLE_ORG) {
+            roles << Rol.findByAuthority('ROLE_ORG')
+        } else if (params.ROLE_EMP) {
+            roles << Rol.findByAuthority('ROLE_EMP')
+        } else {
+            roles << Rol.findByAuthority('ROLE_USER')
+        }
+        return roles
+    }
 }
