@@ -63,4 +63,25 @@ class OrganizacionControllerIntegrationTests extends GroovyTestCase {
         organizacion.refresh()
         assertEquals 'TEST-2', organizacion.nombre
     }
+
+    @Test
+    void debieraEliminarOrganizacion() {
+        def organizacion = new Organizacion (
+            nombre: 'TEST-1'
+            , nombreCompleto: 'TEST-1'
+        ).save()
+
+        def controller = new OrganizacionController()
+        controller.params.id = organizacion.id
+        def model = controller.ver()
+        assert model.organizacion
+        assertEquals 'TEST-1', model.organizacion.nombre
+
+        controller.params.id = organizacion.id
+        controller.elimina()
+        assertEquals "/organizacion/lista", controller.response.redirectedUrl
+
+        model = Organizacion.get(organizacion.id)
+        assert !model
+    }
 }
