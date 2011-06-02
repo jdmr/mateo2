@@ -7,6 +7,8 @@ import org.junit.*
 @TestFor(UsuarioController)
 class UsuarioControllerIntegrationTests extends GroovyTestCase {
 
+    def springSecurityService
+
     @Test
     void debieraHacerRedirectALista() {
         def controller = new UsuarioController()
@@ -29,11 +31,13 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
         def controller = new UsuarioController()
         def model = controller.lista()
         assertEquals 10, model.usuarios.size()
+        assert 20 <= model.totalDeUsuarios
     }
 
     @Test
     void debieraCrearUsuario() {
         def controller = new UsuarioController()
+        controller.springSecurityService = springSecurityService
         def model = controller.nuevo()
         assert model
         assert model.usuario
@@ -58,8 +62,14 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
         ).save()
 
         def controller = new UsuarioController()
+        controller.springSecurityService = springSecurityService
         controller.params.id = usuario.id
-        def model = controller.edita()
+        def model = controller.ver()
+        assert model.usuario
+        assertEquals 'TEST-1', model.usuario.nombre
+
+        controller.params.id = usuario.id
+        model = controller.edita()
         assert model.usuario
         assertEquals 'TEST-1', model.usuario.nombre
 
