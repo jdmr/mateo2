@@ -31,7 +31,7 @@ class OrganizacionController {
             redirect(action: "ver", id: organizacion.id)
         }
         else {
-            render(view: "crea", model: [organizacion: organizacion])
+            render(view: "nueva", model: [organizacion: organizacion])
         }
     }
 

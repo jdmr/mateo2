@@ -51,7 +51,7 @@ class UsuarioController {
                 redirect(action: "ver", id: usuario.id)
             } else {
                 log.error("Hubo un error al crear el usuario ${usuario.errors}")
-                render(view: "crea", model: [usuario: usuario])
+                render(view: "nuevo", model: [usuario: usuario])
             }
         }
     }
