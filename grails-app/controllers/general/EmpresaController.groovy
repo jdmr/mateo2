@@ -1,7 +1,9 @@
 package general
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_ORG'])
 class EmpresaController {
 
     static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
