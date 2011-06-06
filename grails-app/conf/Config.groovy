@@ -114,3 +114,13 @@ grails.plugins.springsecurity.roleHierarchy = '''
    ROLE_ORG > ROLE_EMP
    ROLE_EMP > ROLE_USER
 '''
+
+grails.plugins.springsecurity.useSecurityEventListener = true
+grails.plugins.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
+    def domain = general.Usuario.executeQuery("select new map(usuario.empresa.organizacion.nombre as organizacion, usuario.empresa.nombre as empresa) from Usuario usuario where usuario.username = ?", [e.source.principal.username])
+    def request = org.codehaus.groovy.grails.plugins.springsecurity.SecurityRequestHolder.getRequest()
+    def session = request.getSession(false)
+    session.organizacion = domain[0].organizacion
+    session.empresa = domain[0].empresa
+}
+

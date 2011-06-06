@@ -155,6 +155,58 @@ class UsuarioController {
         }
     }
 
+    @Secured(['ROLE_USER'])
+    def perfil = {
+        def usuario = springSecurityService.currentUser
+
+        def empresas
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            empresas = Empresa.findAll("from Empresa e order by e.organizacion.nombre, e.nombre")
+        } else if(SpringSecurityUtils.ifAnyGranted('ROLE_ORG')) {
+            empresas = Empresa.findAll("from Empresa e where e.organizacion = :organizacion order by e.organizacion.nombre, e.nombre", [organizacion:usuario.empresa])
+        } else {
+            empresas = [usuario.empresa]
+        }
+        
+        return [usuario:usuario, empresas:empresas]
+    }
+
+    @Secured(['ROLE_USER'])
+    def actualizaPerfil = {
+        Usuario.withTransaction {
+            def usuario = springSecurityService.currentUser
+            if (usuario) {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (usuario.version > version) {
+                        
+                        usuario.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'usuario.label', default: 'Usuario')] as Object[], "Another user has updated this Usuario while you were editing")
+                        redirect(action: "perfil")
+                        return
+                    }
+                }
+                if (usuario.password != params.password) {
+                    usuario.password = springSecurityService.encodePassword(params.password)
+                }
+                params.remove('password')
+                usuario.properties = params
+                def currentUser = springSecurityService.currentUser
+                usuario.empresa = currentUser.empresa
+                if (!usuario.hasErrors() && usuario.save(flush: true)) {
+                    flash.message = message(code: 'usuario.perfil.updated.message', args: [usuario.username])
+                    redirect(uri: "/")
+                }
+                else {
+                    redirect(action: "perfil")
+                }
+            }
+            else {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'usuario.label', default: 'Usuario'), params.id])
+                redirect(uri: "/")
+            }
+        }
+    }
+
     def obtieneListaDeRoles = { usuario ->
         def roles = Rol.list()
 

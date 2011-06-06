@@ -39,7 +39,7 @@
 		<g:message code="usuario.correo.label" default="Correo" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="correo" maxlength="128" required="" value="${usuario?.correo}"/>
+    <input type="email" name="correo" maxlength="128" required="" value="${usuario?.correo}" id="correo" />
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: usuario, field: 'accountExpired', 'error')} ">

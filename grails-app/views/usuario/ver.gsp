@@ -95,6 +95,15 @@
 				</li>
 				</g:if>
 
+				<g:if test="${usuario?.empresa}">
+				<li class="fieldcontain">
+					<span id="passwordExpired-label" class="property-label"><g:message code="usuario.empresa.label" default="Empresa" /></span>
+					
+						<span class="property-value" aria-labelledby="empresa-label"><g:fieldValue bean="${usuario}" field="empresa"/></span>
+					
+				</li>
+				</g:if>
+
                 <g:if test="${roles}">
                     <li class="fieldcontain">
                         <span id="authorities-label" class="property-label"><g:message code="usuario.authorities.label" default="Authorities" /></span>

@@ -32,7 +32,7 @@
 					
 						<g:sortableColumn property="correo" title="${message(code: 'usuario.correo.label', default: 'Correo')}" />
 					
-						<g:sortableColumn property="authorities" title="${message(code: 'usuario.authorities.label', default: 'Authorities')}" />
+						<g:sortableColumn property="authorities" title="${message(code: 'usuario.empresa.label', default: 'Empresa')}" />
 					
 					</tr>
 				</thead>
@@ -48,7 +48,7 @@
 					
 						<td>${fieldValue(bean: usuario, field: "correo")}</td>
 					
-						<td>${fieldValue(bean: usuario, field: "authorities")}</td>
+						<td>${fieldValue(bean: usuario, field: "empresa")}</td>
 					
 					</tr>
 				</g:each>

@@ -49,6 +49,13 @@ body {
 
 .encabezado a {
     margin: 0 !important;
+	color: #FFFFFF !important;
+    text-decoration: none;
+}
+
+.encabezado a:hover, a:active {
+	outline: none; /* prevents outline in webkit on active links but retains it for tab focus */
+    text-decoration: underline;
 }
 
 #logo {

@@ -17,4 +17,8 @@ class Empresa {
     String toString() {
         return nombre
     }
+
+    String getNombreCanonico() {
+        return "${organizacion.nombre} | ${nombre}"
+    }
 }

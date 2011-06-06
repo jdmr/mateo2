@@ -24,7 +24,8 @@
             </div>
             <div class="encabezado">
                 <sec:ifLoggedIn>
-                    <p><g:message code="welcome.header.message" /> <sec:loggedInUserInfo field="username" /></p>
+                    <p><a href="${createLink(controller:'usuario',action:'perfil')}"><g:message code="welcome.header.message" /> <sec:username /></a></p>
+                    <p><a href="${createLink(controller:'usuario',action:'perfil')}">${session?.organizacion} | ${session?.empresa}</a></p>
                     <p><a href="${createLink(controller:'logout')}"><g:message code="logout.header.message" /></a></p>
                 </sec:ifLoggedIn>
             </div>
