@@ -11,6 +11,9 @@ class Usuario {
     String nombre
     String apellido
     String correo
+    Empresa empresa
+
+    static belongsTo = [Empresa]
 
 	static constraints = {
 		username blank: false, unique: true

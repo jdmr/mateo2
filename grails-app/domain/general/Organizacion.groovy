@@ -3,6 +3,9 @@ package general
 class Organizacion {
     String nombre
     String nombreCompleto
+    Set empresas
+
+    static hasMany = [empresas: Empresa]
 
     static constraints = {
         nombre(blank:false, unique:true, maxSize:32)

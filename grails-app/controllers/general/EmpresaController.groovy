@@ -6,6 +6,8 @@ import grails.plugins.springsecurity.Secured
 @Secured(['ROLE_ORG'])
 class EmpresaController {
 
+    def springSecurityService
+
     static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
@@ -24,13 +26,20 @@ class EmpresaController {
     }
 
     def crea = {
-        def empresa = new Empresa(params)
-        if (empresa.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresa.id])
-            redirect(action: "ver", id: empresa.id)
-        }
-        else {
-            render(view: "nueva", model: [empresa: empresa])
+        Empresa.withTransaction {
+            def empresa = new Empresa(params)
+            if (empresa.save(flush: true)) {
+                // Actualizando empresa del usuario
+                def usuario = springSecurityService.currentUser
+                usuario.empresa = empresa
+                usuario.save()
+
+                flash.message = message(code: 'default.created.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresa.nombre])
+                redirect(action: "ver", id: empresa.id)
+            }
+            else {
+                render(view: "nueva", model: [empresa: empresa])
+            }
         }
     }
 
@@ -57,48 +66,76 @@ class EmpresaController {
     }
 
     def actualiza = {
-        def empresa = Empresa.get(params.id)
-        if (empresa) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (empresa.version > version) {
-                    
-                    empresa.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'empresa.label', default: 'Empresa')] as Object[], "Another user has updated this Empresa while you were editing")
+        Empresa.withTransaction {
+            def empresa = Empresa.get(params.id)
+            if (empresa) {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (empresa.version > version) {
+                        
+                        empresa.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'empresa.label', default: 'Empresa')] as Object[], "Another user has updated this Empresa while you were editing")
+                        render(view: "edita", model: [empresa: empresa])
+                        return
+                    }
+                }
+                empresa.properties = params
+                if (!empresa.hasErrors() && empresa.save(flush: true)) {
+                    // Actualizando empresa del usuario
+                    def usuario = Usuario.get(springSecurityService.principal.id)
+                    usuario.empresa = empresa
+                    usuario.save()
+
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresa.nombre])
+                    redirect(action: "ver", id: empresa.id)
+                }
+                else {
                     render(view: "edita", model: [empresa: empresa])
-                    return
                 }
             }
-            empresa.properties = params
-            if (!empresa.hasErrors() && empresa.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresa.id])
-                redirect(action: "ver", id: empresa.id)
-            }
             else {
-                render(view: "edita", model: [empresa: empresa])
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
+                redirect(action: "lista")
             }
-        }
-        else {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-            redirect(action: "lista")
         }
     }
 
     def elimina = {
-        def empresa = Empresa.get(params.id)
-        if (empresa) {
-            try {
-                empresa.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
+        Empresa.withTransaction {
+            def empresa = Empresa.get(params.id)
+            if (empresa) {
+                def nombre
+                try {
+                    // Cambiar de empresa al usuario
+                    def usuario = Usuario.get(springSecurityService.principal.id)
+                    if (usuario.empresa == empresa) {
+                        def empresas = Empresa.findAllByOrganizacion(empresa.organizacion)
+                        for (x in empresas) {
+                            if (x != empresa) {
+                                usuario.empresa = x
+                                break
+                            }
+                        }
+
+                        if (usuario.empresa == empresa) {
+                            flash.message = message(code:'empresa.noEliminada.message', args: [empresa.nombre])
+                            redirect(action:'ver',id:empresa.id)
+                        }
+                    }
+
+                    nombre = empresa.nombre
+                    empresa.delete(flush: true)
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), nombre])
+                    redirect(action: "lista")
+                }
+                catch (org.springframework.dao.DataIntegrityViolationException e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), nombre])
+                    redirect(action: "ver", id: params.id)
+                }
+            }
+            else {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
                 redirect(action: "lista")
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-                redirect(action: "ver", id: params.id)
-            }
-        }
-        else {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-            redirect(action: "lista")
         }
     }
 }

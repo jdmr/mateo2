@@ -18,6 +18,15 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraMostrarListaDeUsuarios() {
+        def organizacion = new Organizacion (
+            nombre : 'TEST-1'
+            , nombreCompleto : 'TEST-1'
+        ).save()
+        def empresa = new Empresa (
+            nombre : 'TEST-1'
+            , nombreCompleto : 'TEST-1'
+            , organizacion : organizacion
+        ).save()
         for (i in 1..20) {
             new Usuario(
                 username:"TEST$i"
@@ -25,6 +34,7 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
                 ,nombre:"TEST$i"
                 ,apellido:"TEST$i"
                 ,correo:"TEST$i"
+                ,empresa: empresa
             ).save()
         }
 
@@ -36,6 +46,15 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraCrearUsuario() {
+        def organizacion = new Organizacion (
+            nombre : 'TEST-1'
+            , nombreCompleto : 'TEST-1'
+        ).save()
+        def empresa = new Empresa (
+            nombre : 'TEST-1'
+            , nombreCompleto : 'TEST-1'
+            , organizacion : organizacion
+        ).save()
         def controller = new UsuarioController()
         controller.springSecurityService = springSecurityService
         def model = controller.nuevo()
@@ -47,18 +66,29 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
         controller.params.nombre = 'TEST1'
         controller.params.apellido = 'TEST1'
         controller.params.correo = 'TEST1'
+        controller.params.empresa = empresa
         controller.crea()
         assert controller.response.redirectedUrl.startsWith('/usuario/ver')
     }
 
     @Test
     void debieraActualizarUsuario() {
+        def organizacion = new Organizacion (
+            nombre : 'TEST-1'
+            , nombreCompleto : 'TEST-1'
+        ).save()
+        def empresa = new Empresa (
+            nombre : 'TEST-1'
+            , nombreCompleto : 'TEST-1'
+            , organizacion : organizacion
+        ).save()
         def usuario = new Usuario(
             username:"TEST-1"
             ,password:"TEST-1"
             ,nombre:"TEST-1"
             ,apellido:"TEST-1"
             ,correo:"TEST-1"
+            ,empresa: empresa
         ).save()
 
         def controller = new UsuarioController()
@@ -83,12 +113,22 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraEliminarUsuario() {
+        def organizacion = new Organizacion (
+            nombre : 'TEST-1'
+            , nombreCompleto : 'TEST-1'
+        ).save()
+        def empresa = new Empresa (
+            nombre : 'TEST-1'
+            , nombreCompleto : 'TEST-1'
+            , organizacion : organizacion
+        ).save()
         def usuario = new Usuario(
             username:"TEST-1"
             ,password:"TEST-1"
             ,nombre:"TEST-1"
             ,apellido:"TEST-1"
             ,correo:"TEST-1"
+            ,empresa: empresa
         ).save()
 
         def controller = new UsuarioController()

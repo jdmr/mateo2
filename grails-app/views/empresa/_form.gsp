@@ -1,7 +1,7 @@
 <%@ page import="general.Empresa" %>
 
 
-
+<g:hiddenField name="organizacion.id" value="${empresa?.organizacion?.id}" />
 <div class="fieldcontain ${hasErrors(bean: empresa, field: 'nombre', 'error')} required">
 	<label for="nombre">
 		<g:message code="empresa.nombre.label" default="Nombre" />
@@ -16,13 +16,5 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="nombreCompleto" maxlength="128" required="" value="${empresa?.nombreCompleto}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: empresa, field: 'organizacion', 'error')} required">
-	<label for="organizacion">
-		<g:message code="empresa.organizacion.label" default="Organizacion" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:select id="organizacion" name="organizacion.id" from="${general.Organizacion.list()}" optionKey="id" required="" value="${empresa?.organizacion?.id}" class="many-to-one"/>
 </div>
 

@@ -18,7 +18,7 @@ class OrganizacionControllerIntegrationTests extends GroovyTestCase {
 
         def controller = new OrganizacionController()
         controller.index()
-        assertEquals '/organizacion/lista', controller.response.redirectedUrl
+        assert '/organizacion/lista', controller.response.redirectedUrl
 
         def model = controller.lista()
         assertEquals 10, model.organizaciones.size()
@@ -35,7 +35,7 @@ class OrganizacionControllerIntegrationTests extends GroovyTestCase {
         controller.params.nombre = 'TEST-1'
         controller.params.nombreCompleto = 'TEST-1'
         controller.crea()
-        assert controller.response.redirectedUrl.startsWith('/organizacion/ver')
+        assert controller.response.redirectedUrl.startsWith('/empresa/edita')
     }
 
     @Test

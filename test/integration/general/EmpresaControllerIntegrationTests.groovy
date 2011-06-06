@@ -3,12 +3,21 @@ package general
 import grails.test.*
 import grails.test.mixin.*
 import org.junit.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.GrantedAuthorityImpl
+import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUser
+import org.springframework.security.core.context.SecurityContextHolder as SCH
+import org.springframework.security.authentication.TestingAuthenticationToken
 
 @TestFor(EmpresaController)
 class EmpresaControllerIntegrationTests extends GroovyTestCase {
 
+    def springSecurityService
+
     @Test
     void debieraMostrarListaDeEmpresas() {
+        authenticateAdmin()
+
         def organizacion = new Organizacion (
             nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
@@ -22,6 +31,7 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
         }
 
         def controller = new EmpresaController()
+        controller.springSecurityService = springSecurityService
         controller.index()
         assertEquals '/empresa/lista', controller.response.redirectedUrl
 
@@ -32,12 +42,15 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraCrearEmpresa() {
+        authenticateAdmin()
+
         def organizacion = new Organizacion (
             nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
 
         def controller = new EmpresaController()
+        controller.springSecurityService = springSecurityService
         def model = controller.nueva()
         assert model.empresa
 
@@ -50,6 +63,8 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraActualizarEmpresa() {
+        authenticateAdmin()
+
         def organizacion = new Organizacion (
             nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
@@ -61,6 +76,7 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
         ).save()
 
         def controller = new EmpresaController()
+        controller.springSecurityService = springSecurityService
         controller.params.id = empresa.id
         def model = controller.ver()
         assert model.empresa
@@ -81,6 +97,8 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraEliminarEmpresa() {
+        authenticateAdmin()
+
         def organizacion = new Organizacion (
             nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
@@ -92,6 +110,7 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
         ).save()
 
         def controller = new EmpresaController()
+        controller.springSecurityService = springSecurityService
         controller.params.id = empresa.id
         def model = controller.ver()
         assert model.empresa
@@ -104,4 +123,27 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
         model = Empresa.get(empresa.id)
         assert !model
     }
+
+    def authenticateAdmin() {
+        def credentials = 'test'
+        def user = new Usuario(
+                username:'admin'
+                ,password:credentials
+            )
+        def authorities = [new GrantedAuthorityImpl('ROLE_ADMIN')]
+        def principal = new GrailsUser(user.username,credentials,true,true,true,true,authorities,1)
+        authenticate(principal,credentials,authorities)
+    }
+
+    def authenticate(principal, credentials, authorities) {
+        def authentication = new TestingAuthenticationToken(principal, credentials, authorities as GrantedAuthority[])
+        authentication.authenticated = true
+        SCH.context.authentication = authentication
+        return authentication
+    }
+
+    def logout() {
+        SCH.context.authentication = null
+    }
+
 }

@@ -25,13 +25,20 @@ class OrganizacionController {
     }
 
     def crea = {
-        def organizacion = new Organizacion(params)
-        if (organizacion.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), organizacion.id])
-            redirect(action: "ver", id: organizacion.id)
-        }
-        else {
-            render(view: "nueva", model: [organizacion: organizacion])
+        Organizacion.withTransaction {
+            def organizacion = new Organizacion(params)
+            if (organizacion.save(flush: true)) {
+                def empresa = new Empresa (
+                    nombre : 'EMPRESA'
+                    , nombreCompleto : 'EMPRESA'
+                    , organizacion : organizacion
+                ).save(flush:true)
+                flash.message = message(code: 'default.created.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), organizacion.nombre])
+                redirect(controller:'empresa', action: "edita", id: empresa.id)
+            }
+            else {
+                render(view: "nueva", model: [organizacion: organizacion])
+            }
         }
     }
 
@@ -71,7 +78,7 @@ class OrganizacionController {
             }
             organizacion.properties = params
             if (!organizacion.hasErrors() && organizacion.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), organizacion.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), organizacion.nombre])
                 redirect(action: "ver", id: organizacion.id)
             }
             else {
@@ -85,21 +92,25 @@ class OrganizacionController {
     }
 
     def elimina = {
-        def organizacion = Organizacion.get(params.id)
-        if (organizacion) {
-            try {
-                organizacion.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), params.id])
+        Organizacion.withTransaction {
+            def organizacion = Organizacion.get(params.id)
+            if (organizacion) {
+                def nombre
+                try {
+                    nombre = organizacion.nombre
+                    organizacion.delete(flush: true)
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), nombre])
+                    redirect(action: "lista")
+                }
+                catch (org.springframework.dao.DataIntegrityViolationException e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), nombre])
+                    redirect(action: "ver", id: params.id)
+                }
+            }
+            else {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), params.id])
                 redirect(action: "lista")
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), params.id])
-                redirect(action: "ver", id: params.id)
-            }
-        }
-        else {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), params.id])
-            redirect(action: "lista")
         }
     }
 }

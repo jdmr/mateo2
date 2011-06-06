@@ -45,7 +45,7 @@
 				<li class="fieldcontain">
 					<span id="organizacion-label" class="property-label"><g:message code="empresa.organizacion.label" default="Organizacion" /></span>
 					
-						<span class="property-value" aria-labelledby="organizacion-label"><g:link controller="organizacion" action="show" id="${empresa?.organizacion?.id}">${empresa?.organizacion?.encodeAsHTML()}</g:link></span>
+						<span class="property-value" aria-labelledby="organizacion-label"><g:link controller="organizacion" action="ver" id="${empresa?.organizacion?.id}">${empresa?.organizacion?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>
