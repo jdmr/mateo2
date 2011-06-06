@@ -16,7 +16,8 @@ class EmpresaController {
 
 	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[empresas: Empresa.list(params), totalDeEmpresas: Empresa.count()]
+        def usuario = springSecurityService.currentUser
+		[empresas: Empresa.findAllByOrganizacion(usuario.empresa.organizacion, params), totalDeEmpresas: Empresa.countByOrganizacion(usuario.empresa.organizacion)]
 	}
 
     def nueva = {
@@ -28,9 +29,10 @@ class EmpresaController {
     def crea = {
         Empresa.withTransaction {
             def empresa = new Empresa(params)
+            def usuario = springSecurityService.currentUser
+            empresa.organizacion = usuario.empresa.organizacion
             if (empresa.save(flush: true)) {
                 // Actualizando empresa del usuario
-                def usuario = springSecurityService.currentUser
                 usuario.empresa = empresa
                 usuario.save()
 
@@ -79,9 +81,10 @@ class EmpresaController {
                     }
                 }
                 empresa.properties = params
+                def usuario = springSecurityService.currentUser
+                empresa.organizacion = usuario.empresa.organizacion
                 if (!empresa.hasErrors() && empresa.save(flush: true)) {
                     // Actualizando empresa del usuario
-                    def usuario = Usuario.get(springSecurityService.principal.id)
                     usuario.empresa = empresa
                     usuario.save()
 
@@ -103,33 +106,35 @@ class EmpresaController {
         Empresa.withTransaction {
             def empresa = Empresa.get(params.id)
             if (empresa) {
-                def nombre
-                try {
-                    // Cambiar de empresa al usuario
-                    def usuario = Usuario.get(springSecurityService.principal.id)
-                    if (usuario.empresa == empresa) {
-                        def empresas = Empresa.findAllByOrganizacion(empresa.organizacion)
-                        for (x in empresas) {
-                            if (x != empresa) {
-                                usuario.empresa = x
-                                break
+                def usuario = springSecurityService.currentUser
+                if (usuario.empresa.organizacion == empresa.organizacion) {
+                    def nombre
+                    try {
+                        // Cambiar de empresa al usuario
+                        if (usuario.empresa == empresa) {
+                            def empresas = Empresa.findAllByOrganizacion(empresa.organizacion)
+                            for (x in empresas) {
+                                if (x != empresa) {
+                                    usuario.empresa = x
+                                    break
+                                }
+                            }
+
+                            if (usuario.empresa == empresa) {
+                                flash.message = message(code:'empresa.noEliminada.message', args: [empresa.nombre])
+                                redirect(action:'ver',id:empresa.id)
                             }
                         }
 
-                        if (usuario.empresa == empresa) {
-                            flash.message = message(code:'empresa.noEliminada.message', args: [empresa.nombre])
-                            redirect(action:'ver',id:empresa.id)
-                        }
+                        nombre = empresa.nombre
+                        empresa.delete(flush: true)
+                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), nombre])
+                        redirect(action: "lista")
                     }
-
-                    nombre = empresa.nombre
-                    empresa.delete(flush: true)
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), nombre])
-                    redirect(action: "lista")
-                }
-                catch (org.springframework.dao.DataIntegrityViolationException e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), nombre])
-                    redirect(action: "ver", id: params.id)
+                    catch (org.springframework.dao.DataIntegrityViolationException e) {
+                        flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), nombre])
+                        redirect(action: "ver", id: params.id)
+                    }
                 }
             }
             else {

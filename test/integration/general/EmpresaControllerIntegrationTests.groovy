@@ -22,12 +22,18 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
             nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
+        def currentUser = springSecurityService.currentUser
+        def flag = true
         for(i in 1..20) {
-            new Empresa (
+            def empresa = new Empresa (
                 nombre: "TEST$i"
                 , nombreCompleto: "TEST$i"
                 , organizacion: organizacion
             ).save()
+            if (flag) { 
+                currentUser.empresa = empresa
+                flag = false
+            }
         }
 
         def controller = new EmpresaController()
@@ -108,6 +114,13 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
             , nombreCompleto: 'TEST-1'
             , organizacion: organizacion
         ).save()
+        new Empresa (
+            nombre: 'TEST-2'
+            , nombreCompleto: 'TEST-2'
+            , organizacion: organizacion
+        ).save()
+        def currentUser = springSecurityService.currentUser
+        currentUser.empresa = empresa
 
         def controller = new EmpresaController()
         controller.springSecurityService = springSecurityService
