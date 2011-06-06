@@ -5,13 +5,15 @@ import grails.test.mixin.*
 import org.junit.*
 
 @TestFor(UsuarioController)
-class UsuarioControllerIntegrationTests extends GroovyTestCase {
+class UsuarioControllerIntegrationTests extends BaseIntegrationTest {
 
     def springSecurityService
 
     @Test
     void debieraHacerRedirectALista() {
+        authenticateAdmin()
         def controller = new UsuarioController()
+        controller.springSecurityService = springSecurityService
         controller.index()
         assertEquals '/usuario/lista', controller.response.redirectedUrl
     }
@@ -27,6 +29,7 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
             , nombreCompleto : 'TEST-1'
             , organizacion : organizacion
         ).save()
+        springSecurityService.currentUser.empresa = empresa
         for (i in 1..20) {
             new Usuario(
                 username:"TEST$i"
@@ -39,6 +42,7 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
         }
 
         def controller = new UsuarioController()
+        controller.springSecurityService = springSecurityService
         def model = controller.lista()
         assertEquals 10, model.usuarios.size()
         assert 20 <= model.totalDeUsuarios
@@ -55,6 +59,7 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
             , nombreCompleto : 'TEST-1'
             , organizacion : organizacion
         ).save()
+        springSecurityService.currentUser.empresa = empresa
         def controller = new UsuarioController()
         controller.springSecurityService = springSecurityService
         def model = controller.nuevo()
@@ -66,7 +71,6 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
         controller.params.nombre = 'TEST1'
         controller.params.apellido = 'TEST1'
         controller.params.correo = 'TEST1'
-        controller.params.empresa = empresa
         controller.crea()
         assert controller.response.redirectedUrl.startsWith('/usuario/ver')
     }
@@ -82,6 +86,7 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
             , nombreCompleto : 'TEST-1'
             , organizacion : organizacion
         ).save()
+        springSecurityService.currentUser.empresa = empresa
         def usuario = new Usuario(
             username:"TEST-1"
             ,password:"TEST-1"
@@ -122,6 +127,7 @@ class UsuarioControllerIntegrationTests extends GroovyTestCase {
             , nombreCompleto : 'TEST-1'
             , organizacion : organizacion
         ).save()
+        springSecurityService.currentUser.empresa = empresa
         def usuario = new Usuario(
             username:"TEST-1"
             ,password:"TEST-1"

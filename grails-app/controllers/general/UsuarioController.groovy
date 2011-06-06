@@ -17,7 +17,8 @@ class UsuarioController {
 
 	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[usuarios: Usuario.list(params), totalDeUsuarios: Usuario.count()]
+        def currentUser = springSecurityService.currentUser
+		[usuarios: Usuario.findAllByEmpresa(currentUser.empresa, params), totalDeUsuarios: Usuario.countByEmpresa(currentUser.empresa)]
 	}
 
     def nuevo = {
@@ -33,6 +34,8 @@ class UsuarioController {
         Usuario.withTransaction {
             def usuario = new Usuario(params)
             usuario.password = springSecurityService.encodePassword(params.password)
+            def currentUser = springSecurityService.currentUser
+            usuario.empresa = currentUser.empresa
             if (usuario.save(flush: true)) {
                 def roles = [] as Set
                 if (params.ROLE_ADMIN) {
@@ -100,6 +103,8 @@ class UsuarioController {
                 }
                 params.remove('password')
                 usuario.properties = params
+                def currentUser = springSecurityService.currentUser
+                usuario.empresa = currentUser.empresa
                 if (!usuario.hasErrors() && usuario.save(flush: true)) {
                     def roles = [] as Set
                     if (params.ROLE_ADMIN) {

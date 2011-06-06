@@ -3,14 +3,9 @@ package general
 import grails.test.*
 import grails.test.mixin.*
 import org.junit.*
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.GrantedAuthorityImpl
-import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUser
-import org.springframework.security.core.context.SecurityContextHolder as SCH
-import org.springframework.security.authentication.TestingAuthenticationToken
 
 @TestFor(EmpresaController)
-class EmpresaControllerIntegrationTests extends GroovyTestCase {
+class EmpresaControllerIntegrationTests extends BaseIntegrationTest {
 
     def springSecurityService
 
@@ -135,28 +130,6 @@ class EmpresaControllerIntegrationTests extends GroovyTestCase {
 
         model = Empresa.get(empresa.id)
         assert !model
-    }
-
-    def authenticateAdmin() {
-        def credentials = 'test'
-        def user = new Usuario(
-                username:'admin'
-                ,password:credentials
-            )
-        def authorities = [new GrantedAuthorityImpl('ROLE_ADMIN')]
-        def principal = new GrailsUser(user.username,credentials,true,true,true,true,authorities,1)
-        authenticate(principal,credentials,authorities)
-    }
-
-    def authenticate(principal, credentials, authorities) {
-        def authentication = new TestingAuthenticationToken(principal, credentials, authorities as GrantedAuthority[])
-        authentication.authenticated = true
-        SCH.context.authentication = authentication
-        return authentication
-    }
-
-    def logout() {
-        SCH.context.authentication = null
     }
 
 }
