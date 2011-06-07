@@ -16,11 +16,13 @@ class LibroControllerIntegrationTests extends BaseIntegrationTest {
         authenticateAdmin()
 
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
             , organizacion: organizacion
         ).save()
@@ -50,11 +52,13 @@ class LibroControllerIntegrationTests extends BaseIntegrationTest {
         authenticateAdmin()
 
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
             , organizacion: organizacion
         ).save()
@@ -77,11 +81,13 @@ class LibroControllerIntegrationTests extends BaseIntegrationTest {
         authenticateAdmin()
 
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
             , organizacion: organizacion
         ).save()
@@ -121,11 +127,13 @@ class LibroControllerIntegrationTests extends BaseIntegrationTest {
         authenticateAdmin()
 
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
             , organizacion: organizacion
         ).save()

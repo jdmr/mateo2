@@ -1,6 +1,7 @@
 package general
 
 class Empresa {
+    String codigo
     String nombre
     String nombreCompleto
     Organizacion organizacion
@@ -10,6 +11,7 @@ class Empresa {
     static hasMany = [usuarios: Usuario]
 
     static constraints = {
+        codigo(blank:false, unique:true, maxSize:6)
         nombre blank:false, unique:'organizacion', maxSize:32
         nombreCompleto blank:false, maxSize:128
     }

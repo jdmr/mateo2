@@ -2,6 +2,14 @@
 
 
 
+<div class="fieldcontain ${hasErrors(bean: organizacion, field: 'codigo', 'error')} required">
+	<label for="codigo">
+		<g:message code="organizacion.codigo.label" default="Codigo" />
+		<span class="required-indicator">*</span>
+	</label>
+	<g:textField name="codigo" maxlength="6" required="" value="${organizacion?.codigo}"/>
+</div>
+
 <div class="fieldcontain ${hasErrors(bean: organizacion, field: 'nombre', 'error')} required">
 	<label for="nombre">
 		<g:message code="organizacion.nombre.label" default="Nombre" />

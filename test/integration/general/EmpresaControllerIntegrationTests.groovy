@@ -14,14 +14,16 @@ class EmpresaControllerIntegrationTests extends BaseIntegrationTest {
         authenticateAdmin()
 
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
         def currentUser = springSecurityService.currentUser
         def flag = true
         for(i in 1..20) {
             def empresa = new Empresa (
-                nombre: "TEST$i"
+                codigo: "TST$i"
+                , nombre: "TEST-$i"
                 , nombreCompleto: "TEST$i"
                 , organizacion: organizacion
             ).save()
@@ -46,7 +48,8 @@ class EmpresaControllerIntegrationTests extends BaseIntegrationTest {
         authenticateAdmin()
 
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
 
@@ -55,6 +58,7 @@ class EmpresaControllerIntegrationTests extends BaseIntegrationTest {
         def model = controller.nueva()
         assert model.empresa
 
+        controller.params.codigo = 'TST-1'
         controller.params.nombre = "TEST-1"
         controller.params.nombreCompleto = "TEST-1"
         controller.crea()
@@ -66,14 +70,18 @@ class EmpresaControllerIntegrationTests extends BaseIntegrationTest {
         authenticateAdmin()
 
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
             , organizacion: organizacion
         ).save()
+        def usuario = springSecurityService.currentUser
+        usuario.empresa = empresa
 
         def controller = new EmpresaController()
         controller.springSecurityService = springSecurityService
@@ -87,6 +95,8 @@ class EmpresaControllerIntegrationTests extends BaseIntegrationTest {
         assert model.empresa
         assertEquals 'TEST-1', model.empresa.nombre
 
+        controller.params.id = empresa.id
+        controller.params.version = empresa.version
         controller.params.nombre = 'TEST-2'
         controller.actualiza()
         assertEquals "/empresa/ver/${empresa.id}", controller.response.redirectedUrl
@@ -100,16 +110,19 @@ class EmpresaControllerIntegrationTests extends BaseIntegrationTest {
         authenticateAdmin()
 
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
             , organizacion: organizacion
         ).save()
         new Empresa (
-            nombre: 'TEST-2'
+            codigo: 'TST2'
+            , nombre: 'TEST-2'
             , nombreCompleto: 'TEST-2'
             , organizacion: organizacion
         ).save()

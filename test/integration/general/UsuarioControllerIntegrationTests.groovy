@@ -21,11 +21,13 @@ class UsuarioControllerIntegrationTests extends BaseIntegrationTest {
     @Test
     void debieraMostrarListaDeUsuarios() {
         def organizacion = new Organizacion (
-            nombre : 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto : 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre : 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto : 'TEST-1'
             , organizacion : organizacion
         ).save()
@@ -51,11 +53,13 @@ class UsuarioControllerIntegrationTests extends BaseIntegrationTest {
     @Test
     void debieraCrearUsuario() {
         def organizacion = new Organizacion (
-            nombre : 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto : 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre : 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto : 'TEST-1'
             , organizacion : organizacion
         ).save()
@@ -78,11 +82,13 @@ class UsuarioControllerIntegrationTests extends BaseIntegrationTest {
     @Test
     void debieraActualizarUsuario() {
         def organizacion = new Organizacion (
-            nombre : 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto : 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre : 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto : 'TEST-1'
             , organizacion : organizacion
         ).save()
@@ -119,11 +125,13 @@ class UsuarioControllerIntegrationTests extends BaseIntegrationTest {
     @Test
     void debieraEliminarUsuario() {
         def organizacion = new Organizacion (
-            nombre : 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto : 'TEST-1'
         ).save()
         def empresa = new Empresa (
-            nombre : 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto : 'TEST-1'
             , organizacion : organizacion
         ).save()

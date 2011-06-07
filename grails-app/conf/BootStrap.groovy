@@ -8,7 +8,8 @@ class BootStrap {
         def organizacion
         if (general.Organizacion.count() == 0) {
             organizacion = new general.Organizacion (
-                nombre : 'UM'
+                codigo : 'UM'
+                , nombre : 'UM'
                 , nombreCompleto : 'Universidad de Montemorelos A.C.'
             ).save()
         }
@@ -22,7 +23,8 @@ class BootStrap {
                 organizacion = organizaciones[0]
             }
             empresa = new general.Empresa (
-                nombre : 'CENTRAL'
+                codigo : 'CTL'
+                , nombre : 'CENTRAL'
                 , nombreCompleto : 'CENTRAL'
                 , organizacion : organizacion
             ).save()

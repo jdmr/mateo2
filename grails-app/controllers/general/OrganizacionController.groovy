@@ -29,7 +29,8 @@ class OrganizacionController {
             def organizacion = new Organizacion(params)
             if (organizacion.save(flush: true)) {
                 def empresa = new Empresa (
-                    nombre : 'EMPRESA'
+                    codigo : 'EMP'
+                    , nombre : 'EMPRESA'
                     , nombreCompleto : 'EMPRESA'
                     , organizacion : organizacion
                 ).save(flush:true)

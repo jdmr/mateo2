@@ -5,13 +5,15 @@ import grails.test.mixin.*
 import org.junit.*
 
 @TestFor(OrganizacionController)
-class OrganizacionControllerIntegrationTests extends GroovyTestCase {
+class OrganizacionControllerIntegrationTests extends BaseIntegrationTest {
 
     @Test
-    void debieraMostrarListaDeUsuarios() {
+    void debieraMostrarListaDeOrganizaciones() {
+        authenticateAdmin()
         for(i in 1..20) {
             new Organizacion (
-                nombre:"TEST$i"
+                codigo: "TST$i"
+                , nombre: "TEST-$i"
                 , nombreCompleto : "TEST$i"
             ).save()
         }
@@ -27,11 +29,13 @@ class OrganizacionControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraCrearOrganizacion() {
+        authenticateAdmin()
         def controller = new OrganizacionController()
         def model = controller.nueva()
         assert model
         assert model.organizacion
 
+        controller.params.codigo = 'TST1'
         controller.params.nombre = 'TEST-1'
         controller.params.nombreCompleto = 'TEST-1'
         controller.crea()
@@ -40,8 +44,10 @@ class OrganizacionControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraActualizarOrganizacion() {
+        authenticateAdmin()
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
 
@@ -56,6 +62,8 @@ class OrganizacionControllerIntegrationTests extends GroovyTestCase {
         assert model.organizacion
         assertEquals 'TEST-1', model.organizacion.nombre
 
+        controller.params.id = organizacion.id
+        controller.params.version = organizacion.version
         controller.params.nombre = 'TEST-2'
         controller.actualiza()
         assertEquals "/organizacion/ver/${organizacion.id}", controller.response.redirectedUrl
@@ -66,8 +74,10 @@ class OrganizacionControllerIntegrationTests extends GroovyTestCase {
 
     @Test
     void debieraEliminarOrganizacion() {
+        authenticateAdmin()
         def organizacion = new Organizacion (
-            nombre: 'TEST-1'
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
             , nombreCompleto: 'TEST-1'
         ).save()
 
