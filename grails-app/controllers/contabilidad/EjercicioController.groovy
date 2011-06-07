@@ -91,13 +91,15 @@ class EjercicioController {
     def elimina = {
         def ejercicio = Ejercicio.get(params.id)
         if (ejercicio) {
+            def nombre
             try {
+                nombre = ejercicio.nombre
                 ejercicio.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'ejercicio.label', default: 'Ejercicio'), params.id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'ejercicio.label', default: 'Ejercicio'), nombre])
                 redirect(action: "lista")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'ejercicio.label', default: 'Ejercicio'), params.id])
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'ejercicio.label', default: 'Ejercicio'), nombre])
                 redirect(action: "ver", id: params.id)
             }
         }
