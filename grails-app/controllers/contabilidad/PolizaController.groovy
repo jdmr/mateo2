@@ -1,7 +1,9 @@
 package contabilidad
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_USER'])
 class PolizaController {
 
     def springSecurityService
