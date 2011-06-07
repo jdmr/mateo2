@@ -57,7 +57,6 @@ class EmpresaControllerIntegrationTests extends BaseIntegrationTest {
 
         controller.params.nombre = "TEST-1"
         controller.params.nombreCompleto = "TEST-1"
-        controller.params.organizacion = organizacion
         controller.crea()
         assert controller.response.redirectedUrl.startsWith('/empresa/ver')
     }
