@@ -13,7 +13,7 @@
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="list" action="lista"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="create" action="nueva"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="create" action="nuevaIngreso"><g:message code="poliza.nueva.ingreso.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
 		<div id="show-poliza" class="content scaffold-show" role="main">
@@ -59,11 +59,11 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${poliza?.dateCreated}">
+				<g:if test="${poliza?.libro}">
 				<li class="fieldcontain">
-					<span id="dateCreated-label" class="property-label"><g:message code="poliza.dateCreated.label" default="Date Created" /></span>
+					<span id="libro-label" class="property-label"><g:message code="poliza.libro.label" default="Libro" /></span>
 					
-						<span class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${poliza?.dateCreated}" /></span>
+						<span class="property-value" aria-labelledby="libro-label"><g:link controller="libro" action="show" id="${poliza?.libro?.id}">${poliza?.libro?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>
@@ -86,20 +86,20 @@
 				</li>
 				</g:if>
 			
+				<g:if test="${poliza?.dateCreated}">
+				<li class="fieldcontain">
+					<span id="dateCreated-label" class="property-label"><g:message code="poliza.dateCreated.label" default="Date Created" /></span>
+					
+						<span class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${poliza?.dateCreated}" /></span>
+					
+				</li>
+				</g:if>
+			
 				<g:if test="${poliza?.lastUpdated}">
 				<li class="fieldcontain">
 					<span id="lastUpdated-label" class="property-label"><g:message code="poliza.lastUpdated.label" default="Last Updated" /></span>
 					
 						<span class="property-value" aria-labelledby="lastUpdated-label"><g:formatDate date="${poliza?.lastUpdated}" /></span>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${poliza?.libro}">
-				<li class="fieldcontain">
-					<span id="libro-label" class="property-label"><g:message code="poliza.libro.label" default="Libro" /></span>
-					
-						<span class="property-value" aria-labelledby="libro-label"><g:link controller="libro" action="show" id="${poliza?.libro?.id}">${poliza?.libro?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>

@@ -8,13 +8,15 @@
 	<g:textArea name="descripcion" maxlength="200" required="" value="${poliza?.descripcion}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: poliza, field: 'tipo', 'error')} ">
-	<label for="tipo">
-		<g:message code="poliza.tipo.label" default="Tipo" />
-		
-	</label>
-	<g:select name="tipo" from="${poliza.constraints.tipo.inList}" value="${poliza?.tipo}" valueMessagePrefix="poliza.tipo" noSelection="['': '']"/>
-</div>
+<g:if test="${!poliza.tipo}">
+    <div class="fieldcontain ${hasErrors(bean: poliza, field: 'tipo', 'error')} ">
+        <label for="tipo">
+            <g:message code="poliza.tipo.label" default="Tipo" />
+            
+        </label>
+        <g:select name="tipo" from="${poliza.constraints.tipo.inList}" value="${poliza?.tipo}" valueMessagePrefix="poliza.tipo" noSelection="['': '']"/>
+    </div>
+</g:if>
 
 <div class="fieldcontain ${hasErrors(bean: poliza, field: 'libro', 'error')} required">
 	<label for="libro">

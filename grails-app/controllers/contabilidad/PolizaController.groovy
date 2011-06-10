@@ -27,6 +27,13 @@ class PolizaController {
         return [poliza: poliza]
     }
 
+    def nuevaIngreso = {
+        def poliza = new Poliza()
+        poliza.properties = params
+        poliza.tipo = 'INGRESOS'
+        return [poliza:poliza]
+    }
+
     def crea = {
         Poliza.withTransaction {
             def usuario = springSecurityService.currentUser
@@ -61,7 +68,11 @@ class PolizaController {
             redirect(action: "lista")
         }
         else {
-            return [poliza: poliza]
+            if (poliza.tipo == 'INGRESOS') {
+                render(view:'editaIngreso',model:[poliza:poliza])
+            } else {
+                return [poliza: poliza]
+            }
         }
     }
 
