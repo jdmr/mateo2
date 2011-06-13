@@ -41,8 +41,13 @@ class PolizaController {
             poliza.folio = folioService.temporal()
             poliza.empresa = usuario.empresa
             if (poliza.save(flush: true)) {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'poliza.label', default: 'Poliza'), poliza.folio])
-                redirect(action: "ver", id: poliza.id)
+                if (poliza.tipo == 'INGRESOS') {
+                    flash.message = message(code: 'poliza.ingresos.created.message', args: [poliza.folio])
+                    redirect(controller:"transaccion", action: "nueva", id: poliza.id)
+                } else {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'poliza.label', default: 'Poliza'), poliza.folio])
+                    redirect(action: "ver", id: poliza.id)
+                }
             }
             else {
                 render(view: "nueva", model: [poliza: poliza])
@@ -57,7 +62,16 @@ class PolizaController {
             redirect(action: "lista")
         }
         else {
-            [poliza: poliza]
+            def origenes = [:]
+            def destinos = [:]
+            for(transaccion in poliza.transacciones) {
+                def x = obtieneMovimientos(transaccion.origenes)
+                def y = obtieneMovimientos(transaccion.destinos)
+                origenes[transaccion.id] = x
+                destinos[transaccion.id] = y
+            }
+
+            [poliza: poliza, origenes: origenes, destinos: destinos]
         }
     }
 
@@ -69,7 +83,16 @@ class PolizaController {
         }
         else {
             if (poliza.tipo == 'INGRESOS') {
-                render(view:'editaIngreso',model:[poliza:poliza])
+                def origenes = [:]
+                def destinos = [:]
+                for(transaccion in poliza.transacciones) {
+                    def x = obtieneMovimientos(transaccion.origenes)
+                    def y = obtieneMovimientos(transaccion.destinos)
+                    origenes[transaccion.id] = x
+                    destinos[transaccion.id] = y
+                }
+
+                render(view:'editaIngreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
             } else {
                 return [poliza: poliza]
             }
@@ -129,4 +152,40 @@ class PolizaController {
             redirect(action: "lista")
         }
     }
+
+    def obtieneMovimientos = { lista ->
+		def resultado = []
+		def cuentas = [:] as TreeMap
+		def movimientos = [:] as TreeMap
+		for(movimiento in lista) {
+			def cuenta = cuentas[movimiento.cuenta.id]
+			if (!cuenta) {
+				cuenta = [movimiento.cuenta, new BigDecimal('0')]
+				cuentas[movimiento.cuenta.id] = cuenta
+			}
+			cuenta[1] = cuenta[1].add(movimiento.importe)
+			
+			def mov = movimientos[movimiento.cuenta.id]
+			if (!mov) {
+				movimientos[movimiento.cuenta.id] = []
+			}
+			movimientos[movimiento.cuenta.id] << movimiento
+		}
+		
+		for (id in cuentas.keySet()) {
+			def encabezado = cuentas[id]
+			if (encabezado[0].tieneAuxiliares) {
+				resultado << new Movimiento(cuenta:encabezado[0],importe:encabezado[1], padre:true)
+                def size = movimientos[id].size()
+                def movimiento = movimientos[id][size-1]
+                movimiento.ultimo = true
+				resultado.addAll(movimientos[id])
+			} else {
+				resultado << new Movimiento(cuenta:encabezado[0],importe:encabezado[1])
+			}
+		}
+
+        return resultado
+    }
+
 }

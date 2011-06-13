@@ -4,7 +4,7 @@ import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import au.com.bytecode.opencsv.CSVReader
 
-@Secured(['ROLE_EMP'])
+@Secured(['ROLE_ORG'])
 class CuentaController {
 
     def springSecurityService
@@ -15,6 +15,7 @@ class CuentaController {
         redirect(action: "lista", params: params)
     }
 
+    @Secured(['ROLE_EMP'])
 	def lista = {
         def usuario = springSecurityService.currentUser
         def cuentas
@@ -23,8 +24,8 @@ class CuentaController {
         def p = [:]
         p.sort = 'numero'
 
-        cuentas = Cuenta.findAllByEmpresa(usuario.empresa,p)
-        totalDeCuentas = Cuenta.countByEmpresa(usuario.empresa)
+        cuentas = Cuenta.findAllByOrganizacion(usuario.empresa.organizacion,p)
+        totalDeCuentas = Cuenta.countByOrganizacion(usuario.empresa.organizacion)
 
 		[cuentas: cuentas, totalDeCuentas: totalDeCuentas]
 	}
@@ -38,7 +39,7 @@ class CuentaController {
     def crea = {
         def cuenta = new Cuenta(params)
         def usuario = springSecurityService.currentUser
-        cuenta.empresa = usuario.empresa
+        cuenta.organizacion = usuario.empresa.organizacion
         if (cuenta.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'cuenta.label', default: 'Cuenta'), cuenta.numero])
             redirect(action: "ver", id: cuenta.id)
@@ -48,6 +49,7 @@ class CuentaController {
         }
     }
 
+    @Secured(['ROLE_EMP'])
     def ver = {
         def cuenta = Cuenta.get(params.id)
         if (!cuenta) {
@@ -83,6 +85,8 @@ class CuentaController {
                 }
             }
             cuenta.properties = params
+            def usuario = springSecurityService.currentUser
+            cuenta.organizacion = usuario.empresa.organizacion
             if (!cuenta.hasErrors() && cuenta.save(flush: true)) {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'cuenta.label', default: 'Cuenta'), cuenta.numero])
                 redirect(action: "ver", id: cuenta.id)
@@ -123,7 +127,7 @@ class CuentaController {
 
         def usuario = springSecurityService.currentUser
         Cuenta.withTransaction {
-            Cuenta.executeUpdate("delete from Cuenta where empresa = ?",[usuario.empresa])
+            Cuenta.executeUpdate("delete from Cuenta where organizacion = ?",[usuario.empresa.organizacion])
 
             def catalogo = [:]
 
@@ -142,7 +146,7 @@ class CuentaController {
                     , numero : nextLine[0]
                     , descripcion : nextLine[1].toUpperCase()
                     , padre : padre
-                    , empresa : usuario.empresa
+                    , organizacion : usuario.empresa.organizacion
                 ).save()
                 catalogo[nextLine[0]] = cuenta 
             }

@@ -60,11 +60,11 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${cuenta?.empresa}">
+				<g:if test="${cuenta?.organizacion}">
 				<li class="fieldcontain">
-					<span id="empresa-label" class="property-label"><g:message code="cuenta.empresa.label" default="Empresa" /></span>
+					<span id="organizacion-label" class="property-label"><g:message code="cuenta.organizacion.label" default="organizacion" /></span>
 					
-						<span class="property-value" aria-labelledby="empresa-label"><g:link controller="empresa" action="show" id="${cuenta?.empresa?.id}">${cuenta?.empresa?.encodeAsHTML()}</g:link></span>
+						<span class="property-value" aria-labelledby="organizacion-label"><g:link controller="organizacion" action="show" id="${cuenta?.organizacion?.id}">${cuenta?.organizacion?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>

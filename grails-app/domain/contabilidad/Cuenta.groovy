@@ -1,6 +1,6 @@
 package contabilidad
 
-import general.Empresa
+import general.Organizacion
 
 class Cuenta {
     String codigo
@@ -9,18 +9,18 @@ class Cuenta {
     Boolean tieneMovimientos = false
     Boolean tieneAuxiliares = false
     Cuenta padre
-    Empresa empresa
+    Organizacion organizacion
     Set hijos
     Set auxiliares
 
-    static belongsTo = [padre: Cuenta, empresa: Empresa]
+    static belongsTo = [padre: Cuenta, organizacion: Organizacion]
 
     static hasMany = [hijos: Cuenta, auxiliares: Auxiliar]
 
     static constraints = {
         codigo maxSize:32, nullable:true 
-        numero blank:false, maxSize:32, unique:'empresa'
-        descripcion blank:false, maxSize:128, unique:'empresa'
+        numero blank:false, maxSize:32, unique:'organizacion'
+        descripcion blank:false, maxSize:128, unique:'organizacion'
         padre nullable:true
     }
 
@@ -30,19 +30,30 @@ class Cuenta {
     }
 
     static namedQueries = {
-        buscaRaices { empresaId ->
+        buscaRaices { organizacionId ->
             isNull('padre')
-            empresa {
-                idEq(empresaId)
+            organizacion {
+                idEq(organizacionId)
             }
         }
         
-        buscaPorPadre { padreId, empresaId ->
+        buscaPorPadre { padreId, organizacionId ->
             padre {
                 idEq(padreId)
             }
-            empresa {
-                idEq(empresaId)
+            organizacionId {
+                idEq(organizacionId)
+            }
+        }
+
+        buscaPorFiltro { filtro, organizacionId ->
+            filtro = "%$filtro%"
+            or {
+                ilike('numero',filtro)
+                ilike('descripcion',filtro)
+            }
+            organizacion {
+                idEq(organizacionId)
             }
         }
     }

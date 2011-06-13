@@ -12,8 +12,11 @@ class Poliza {
     Empresa empresa
     Date dateCreated
     Date lastUpdated
+    Set transacciones
 
     static belongsTo = [Ejercicio, Libro, Empresa]
+
+    static hasMany = [transacciones: Transaccion]
 
     static constraints = {
         folio maxSize:128, blank:false, unique:'empresa'

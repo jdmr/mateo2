@@ -103,8 +103,125 @@
 					
 				</li>
 				</g:if>
-			
+
 			</ol>
+            <g:if test="${poliza.transacciones}">
+            <fieldset class="form" style="margin:0;padding:0;">
+                <ol class="property-list poliza" style="margin:0;padding:0;">
+                    <li class="fieldcontain"><span>
+                            <div id="transacciones">
+                              <table>
+                                <thead>
+                                  <tr>
+                                    <th><g:message code="transaccion.folio.label" /></th>
+                                    <th></th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <g:each var="transaccion" in="${poliza.transacciones}">
+                                    <g:set var="transaccionId" value="${transaccion.id}"/>
+                                    <tr>
+                                        <td>${transaccion.folio}</td>
+                                        <td>${transaccion.descripcion}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:30px;">${message(code:'transaccion.cuenta.label')}</th>
+                                                        <th style="width:30px;">${message(code:'transaccion.auxiliar.label')}</th>
+                                                        <th>${message(code:'transaccion.concepto.label')}</th>
+                                                        <th style='text-align:right;width:100px;'>${message(code:'transaccion.parcial.label')}</th>
+                                                        <th style='text-align:right;width:100px;'>${message(code:'transaccion.debe.label')}</th>
+                                                        <th style='text-align:right;width:100px;'>${message(code:'transaccion.haber.label')}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <g:set var="counter" value="${1}" />
+                                                    <g:set var="counter2" value="${1}" />
+                                                    <g:set var="movimientos" value="${origenes[transaccion.id]}"/>
+                                                    <g:each var="movimiento" in="${movimientos}">
+                                                        <tr>
+                                                            <td <g:if test="${movimiento.padre}">style="text-decoration:underline;"</g:if>><g:if test="${!movimiento.auxiliar}">${movimiento.cuenta.numero}</g:if></td>
+                                                            <td>${movimiento.auxiliar?.numero}</td>
+                                                            <td <g:if test="${movimiento.padre}">style="text-decoration:underline;"</g:if>><g:if test="${!movimiento.auxiliar}">${movimiento.cuenta.descripcion}</g:if><g:else>${movimiento.auxiliar.descripcion}</g:else></td>
+                                                            <td style='text-align:right;<g:if test="${movimiento.ultimo}">text-decoration:underline;</g:if>'>
+                                                                <g:if test="${movimiento.auxiliar}">
+                                                                    <g:if test="${(counter2++) == 1}">
+                                                                        <g:formatNumber type="currency" number="${movimiento.importe}" />
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <g:formatNumber type="currency" number="${movimiento.importe}" currencySymbol="" />
+                                                                    </g:else>
+                                                                </g:if>
+                                                            </td>
+                                                            <td style='text-align:right;'>
+                                                                <g:if test="${!movimiento.auxiliar}">
+                                                                    <g:if test="${(counter++) == 1}">
+                                                                        <g:formatNumber type="currency" number="${movimiento.importe}" />
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <g:formatNumber type="currency" number="${movimiento.importe}" currencySymbol="" />
+                                                                    </g:else>
+                                                                </g:if>
+                                                            </td>
+                                                            <td>&nbsp;</td>
+                                                        </tr>
+                                                        <g:if test="${movimiento.ultimo}"><g:set var="counter2" value="${1}" /></g:if>
+                                                    </g:each>
+                                                    <g:set var="counter" value="${1}" />
+                                                    <g:set var="counter2" value="${1}" />
+                                                    <g:set var="movimientos" value="${destinos[transaccion.id]}"/>
+                                                    <g:each var="movimiento" in="${movimientos}">
+                                                        <tr>
+                                                            <td <g:if test="${movimiento.padre}">style="text-decoration:underline;"</g:if>><g:if test="${!movimiento.auxiliar}">${movimiento.cuenta.numero}</g:if></td>
+                                                            <td>${movimiento.auxiliar?.numero}</td>
+                                                            <td style='padding-left:30px;<g:if test="${movimiento.padre}">text-decoration:underline;</g:if>'><g:if test="${!movimiento.auxiliar}">${movimiento.cuenta.descripcion}</g:if><g:else>${movimiento.auxiliar.descripcion}</g:else></td>
+                                                            <td style='text-align:right;<g:if test="${movimiento.ultimo}">text-decoration:underline;</g:if>'>
+                                                                <g:if test="${movimiento.auxiliar}">
+                                                                    <g:if test="${(counter2++) == 1}">
+                                                                        <g:formatNumber type="currency" number="${movimiento.importe}" />
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <g:formatNumber type="currency" number="${movimiento.importe}" currencySymbol="" />
+                                                                    </g:else>
+                                                                </g:if>
+                                                            </td>
+                                                            <td>&nbsp;</td>
+                                                            <td style='text-align:right;'>
+                                                                <g:if test="${!movimiento.auxiliar}">
+                                                                    <g:if test="${(counter++) == 1}">
+                                                                        <g:formatNumber type="currency" number="${movimiento.importe}" />
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <g:formatNumber type="currency" number="${movimiento.importe}" currencySymbol="" />
+                                                                    </g:else>
+                                                                </g:if>
+                                                            </td>
+                                                        </tr>
+                                                        <g:if test="${movimiento.ultimo}"><g:set var="counter2" value="${1}" /></g:if>
+                                                    </g:each>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th colspan="4" style="text-align:right;">TOTAL</th>
+                                                        <th style="text-align:right;"><g:formatNumber type="currency" number="${transaccion.importe}" /></th>
+                                                        <th style="text-align:right;"><g:formatNumber type="currency" number="${transaccion.importe}" /></th>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                  </g:each>
+                                </tbody>
+                              </table>
+                            </div>
+                        </span>
+                    </li>
+                </ol>
+            </fieldset>
+            </g:if>
 			<g:form>
 				<fieldset class="buttons">
 					<g:hiddenField name="id" value="${poliza?.id}" />
