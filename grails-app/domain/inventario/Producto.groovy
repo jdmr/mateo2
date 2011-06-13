@@ -1,5 +1,7 @@
 package inventario
 
+import general.Imagen
+
 class Producto {//implements java.io.Serializable {
     String codigo
 //    String sku
