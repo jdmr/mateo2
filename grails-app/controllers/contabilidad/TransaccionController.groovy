@@ -2,6 +2,7 @@ package contabilidad
 
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
+import general.Tag
 
 @Secured(['ROLE_USER'])
 class TransaccionController {
@@ -56,6 +57,17 @@ class TransaccionController {
                 transaccion.importe = importeAnterior
                 def usuario = springSecurityService.currentUser
                 transaccion.empresa = usuario.empresa
+
+                log.debug("TAGS: ${transaccion.tags}")
+                def tags = transaccion.tags.tokenize(',')
+                log.debug("TOKENS: ${tags}")
+                for(tag in tags) {
+                    tag = tag.tr('A-Z','a-z')
+                    def x = Tag.findByOrganizacionAndNombre(usuario.empresa.organizacion, tag)
+                    if (!x) {
+                        new Tag(nombre: tag, organizacion: usuario.empresa.organizacion).save()
+                    }
+                }
 
                 if (params.importe) {
                     if (params.cuentaId) {
@@ -129,6 +141,7 @@ class TransaccionController {
                                         }
                                     }
                                     transaccion.save(flush:true)
+
                                 } else {
                                     // No se puede distribuir dinero que no se ha especificado
                                     // a quien se le va a entregar
@@ -163,6 +176,7 @@ class TransaccionController {
                                 transaccion.addToDestinos(movimiento)
                                 transaccion.importe = transaccion.importe.add(importe)
                                 transaccion.save(flush:true)
+
                             }
                         } // si encontro la cuenta
                     } // si trae una cuenta
@@ -252,4 +266,8 @@ class TransaccionController {
         }
     }
 
+    def tags = {
+        def usuario = springSecurityService.currentUser
+        render Tag.buscaPorFiltro("%${params.term}%",usuario.empresa.organizacion.id).list([max:10])*.nombre as grails.converters.JSON
+    }
 }

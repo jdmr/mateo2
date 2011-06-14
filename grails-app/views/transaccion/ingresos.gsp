@@ -5,7 +5,7 @@
 		<g:set var="entityName" value="${message(code: 'transaccion.label', default: 'Transacción')}" />
 		<g:set var="polizaName" value="${message(code: 'poliza.label', default: 'Poliza')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
-        <r:require module="jquery-ui" />
+        <r:require module="tagit" />
 	</head>
 	<body>
 		<a href="#edit-cuenta" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -35,6 +35,17 @@
 				<g:hiddenField name="auxiliarId" value="" />
 
 				<fieldset class="form">
+                    <div class="fieldcontain">
+                        <h3>
+                            <g:message code="transaccion.tags.label" default="tags" />
+                        </h3>
+                        <ul name="tags">
+                          <g:each in="${transaccion?.tags?.tokenize(',')}">
+                            <li>${it}</li>
+                          </g:each>
+                        </ul>
+                    </div>
+
                     <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'descripcion', 'error')} required">
                         <label for="descripcion">
                             <g:message code="transaccion.descripcion.label" default="descripcion" />
@@ -46,17 +57,15 @@
                     <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'importe', 'error')} required">
                         <label for="importe">
                             <g:message code="transaccion.importe.label" default="importe" />
-                            <span class="required-indicator">*</span>
                         </label>
-                        <g:textField name="importe" maxlength="200" required="" value="" style="width:400px;"/>
+                        <g:textField name="importe" maxlength="200" value="" style="width:400px;"/>
                     </div>
 
                     <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'cuenta', 'error')} required">
                         <label for="cuenta">
                             <g:message code="transaccion.cuenta.label" default="cuenta" />
-                            <span class="required-indicator">*</span>
                         </label>
-                        <g:textField name="cuenta" maxlength="200" required="" value="" style="width:400px;"/>
+                        <g:textField name="cuenta" maxlength="200" value="" style="width:400px;"/>
                     </div>
 
                     <div id="auxiliarDiv" class="fieldcontain ${hasErrors(bean: transaccion, field: 'auxiliar', 'error')} required" style="display:none;">
@@ -168,6 +177,7 @@
 				<fieldset class="buttons">
 					<g:actionSubmit class="save" action="actualiza" value="${message(code: 'default.button.update.label', default: 'Update')}" />
 					<g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" formnovalidate="" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                    <g:link class="edit" controller="poliza" action="edita" id="${transaccion.poliza.id}"><g:message code="default.edit.label" args="[polizaName]" /></g:link>
 				</fieldset>
 			</g:form>
 		</div>
@@ -203,6 +213,7 @@
                     }
                 });
                 
+                $("ul[name='tags']").tagit({select:true, tagSource: "${g.createLink(action: 'tags')}"});
                 $('#descripcion').select();
                 $('#descripcion').focus();
             });
