@@ -12,7 +12,6 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="create" action="nueva"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 				<li><g:link class="create" action="nuevaIngreso"><g:message code="poliza.nueva.ingreso.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
