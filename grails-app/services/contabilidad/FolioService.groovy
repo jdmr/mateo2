@@ -43,6 +43,24 @@ class FolioService {
         return "P-${codigos[0].organizacion}${codigos[0].empresa}${nf.format(folio.valor)}"
     }
 
+    def transaccion() {
+        def usuario = springSecurityService.currentUser
+        def codigos = Usuario.executeQuery("select new map(usuario.empresa.organizacion.codigo as organizacion, usuario.empresa.codigo as empresa) from Usuario usuario where usuario = ?", [usuario])
+        def folio = Folio.findByNombreAndEmpresa('TRANSACCION', usuario.empresa)
+        if (!folio) {
+            folio = new Folio(
+                nombre : 'TRANSACCION'
+                , empresa : usuario.empresa
+            )
+        }
+        folio.valor++
+        folio.save()
+        if (!nf) {
+            inicializaNumberFormat()
+        }
+        return "M-${codigos[0].organizacion}${codigos[0].empresa}${nf.format(folio.valor)}"
+    }
+
     def inicializaNumberFormat() {
         nf = DecimalFormat.getInstance()
         nf.setGroupingUsed(false)

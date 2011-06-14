@@ -227,8 +227,11 @@
 			<g:form>
 				<fieldset class="buttons">
 					<g:hiddenField name="id" value="${poliza?.id}" />
-					<g:link class="edit" action="edita" id="${poliza?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-					<g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                    <g:if test="${poliza.estatus == 'ABIERTA'}">
+                        <g:link class="edit" action="edita" id="${poliza?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+					    <g:actionSubmit class="save" action="cierra" value="${message(code: 'poliza.button.cierra.label', default: 'Cierra')}" onclick="return confirm('${message(code: 'poliza.button.cierra.confirm.message', default: 'Are you sure?')}');" />
+                        <g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                    </g:if>
 				</fieldset>
 			</g:form>
 		</div>

@@ -58,7 +58,7 @@
                                             <td style="text-align:right; width:150px;"><g:link controller="transaccion" action="edita" id="${transaccion.id}"><g:message code="default.button.edit.label" /></g:link> | <g:link controller="transaccion" action="elimina" id="${transaccion.id}"><g:message code="default.button.delete.label" /></g:link></td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3">
+                                            <td colspan="4">
                                                 <table>
                                                     <thead>
                                                         <tr>
@@ -158,6 +158,7 @@
 				<fieldset class="buttons">
 					<g:actionSubmit class="save" action="nuevaTransaccion" value="${message(code: 'poliza.button.nuevaTransaccion.label', default: 'Update')}" />
 					<g:actionSubmit class="save" action="actualiza" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+					<g:actionSubmit class="save" action="cierra" value="${message(code: 'poliza.button.cierra.label', default: 'Cierra')}" onclick="return confirm('${message(code: 'poliza.button.cierra.confirm.message', default: 'Are you sure?')}');" />
 					<g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" formnovalidate="" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 				</fieldset>
 			</g:form>

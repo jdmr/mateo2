@@ -59,7 +59,7 @@ class TransaccionController {
                 transaccion.empresa = usuario.empresa
 
                 log.debug("TAGS: ${transaccion.tags}")
-                def tags = transaccion.tags.tokenize(',')
+                def tags = transaccion.tags?.tokenize(',')
                 log.debug("TOKENS: ${tags}")
                 for(tag in tags) {
                     tag = tag.tr('A-Z','a-z')
