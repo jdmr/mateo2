@@ -188,4 +188,32 @@ class PolizaController {
         return resultado
     }
 
+    def nuevaTransaccion = {
+        Poliza.withTransaction {
+            def poliza = Poliza.get(params.id)
+            if (poliza) {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (poliza.version > version) {
+                        poliza.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'poliza.label', default: 'Poliza')] as Object[], "Another user has updated this Poliza while you were editing")
+                        render(view: "edita", model: [poliza: poliza])
+                        return
+                    }
+                }
+                poliza.properties = params
+                if (!poliza.hasErrors() && poliza.save(flush: true)) {
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'poliza.label', default: 'Poliza'), poliza.folio])
+                    redirect(controller:'transaccion',action: "nueva", id: poliza.id)
+                }
+                else {
+                    render(view: "edita", model: [poliza: poliza])
+                }
+            }
+            else {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
+                redirect(action: "lista")
+            }
+        }
+    }
+
 }

@@ -3,6 +3,7 @@
 	<head>
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'transaccion.label', default: 'Transacción')}" />
+		<g:set var="polizaName" value="${message(code: 'poliza.label', default: 'Poliza')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
         <r:require module="jquery-ui" />
 	</head>
@@ -11,7 +12,7 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="list" action="lista"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+                <li><g:link class="edit" controller="poliza" action="edita" id="${transaccion.poliza.id}"><g:message code="default.edit.label" args="[polizaName]" /></g:link></li>
 				<li><g:link class="create" action="nueva"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
@@ -47,7 +48,7 @@
                             <g:message code="transaccion.importe.label" default="importe" />
                             <span class="required-indicator">*</span>
                         </label>
-                        <g:textField name="importe" maxlength="200" required="" value=""/>
+                        <g:textField name="importe" maxlength="200" required="" value="" style="width:400px;"/>
                     </div>
 
                     <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'cuenta', 'error')} required">
@@ -55,21 +56,21 @@
                             <g:message code="transaccion.cuenta.label" default="cuenta" />
                             <span class="required-indicator">*</span>
                         </label>
-                        <g:textField name="cuenta" maxlength="200" required="" value=""/>
+                        <g:textField name="cuenta" maxlength="200" required="" value="" style="width:400px;"/>
                     </div>
 
                     <div id="auxiliarDiv" class="fieldcontain ${hasErrors(bean: transaccion, field: 'auxiliar', 'error')} required" style="display:none;">
                         <label for="auxiliar">
                             <g:message code="transaccion.auxiliar.label" default="auxiliar" />
                         </label>
-                        <g:textField name="auxiliar" maxlength="200" value=""/>
+                        <g:textField name="auxiliar" maxlength="200" value="" style="width:400px;"/>
                     </div>
 
-                    <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'esDebe', 'error')} required">
+                    <div class="fieldcontain">
                         <label for="esDebe">
                             <g:message code="transaccion.esDebe.label" default="esDebe" />
                         </label>
-                        <g:checkBox name="esDebe" value=""/>
+                        <input type="checkbox" name="esDebe" value="" id="esDebe" />
                     </div>
 
                     <div class="fieldcontain">
@@ -83,12 +84,12 @@
                         <table style="margin:0;">
                             <thead>
                                 <tr>
-                                    <th style="width:30px;">${message(code:'transaccion.cuenta.label')}</th>
-                                    <th style="width:30px;">${message(code:'transaccion.auxiliar.label')}</th>
-                                    <th>${message(code:'transaccion.descripcion.label')}</th>
-                                    <th style='text-align:right;width:100px;'>${message(code:'transaccion.parcial.label')}</th>
-                                    <th style='text-align:right;width:100px;'>${message(code:'transaccion.debe.label')}</th>
-                                    <th style='text-align:right;width:100px;'>${message(code:'transaccion.haber.label')}</th>
+                                    <th style="width:100px;">${message(code:'transaccion.cuenta.label')}</th>
+                                    <th style="width:100px;">${message(code:'transaccion.auxiliar.label')}</th>
+                                    <th>${message(code:'transaccion.nombre.label')}</th>
+                                    <th style='text-align:right;width:130px;'>${message(code:'transaccion.parcial.label')}</th>
+                                    <th style='text-align:right;width:130px;'>${message(code:'transaccion.debe.label')}</th>
+                                    <th style='text-align:right;width:130px;'>${message(code:'transaccion.haber.label')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -181,7 +182,7 @@
                             $("#auxiliarDiv").toggle('blind',{},500, function() {
                                 $("#auxiliar").val($("#cuenta").val());
                                 $("#cuenta").val(ui.item.cuenta);
-                                $("#auxiliar").focus();
+                                $("#esDebe").focus();
                             });
                         } else if (ui.item.tieneAuxiliares) {
                             $("#auxiliarDiv").toggle('blind',{},500, function() {
@@ -196,6 +197,8 @@
                     source:"${createLink(action:'auxiliares')}/"+$('#cuentaId').val()
                     ,select: function(event,ui) {
                         $('#auxiliarId').val(ui.item.id);
+                        $('#cuentaId').val(ui.item.cuentaId);
+                        $('#cuenta').val(ui.item.cuenta);
                         $("#esDebe").focus();
                     }
                 });

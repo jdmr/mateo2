@@ -9,7 +9,7 @@ class TransaccionController {
     def springSecurityService
     def folioService
 
-    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
+    static allowedMethods = [crea: "POST", actualiza: "POST"]
 
     def index = {
         redirect(controller:'poliza', action: "lista", params: params)
@@ -71,7 +71,7 @@ class TransaccionController {
                                 auxiliar = Auxiliar.findByOrganizacionAndId(usuario.empresa.organizacion, params.auxiliarId)
                                 movimiento.auxiliar = auxiliar
                             }
-                            if (params.esDebe) {
+                            if (params.esDebe != null) {
                                 // Valido si esta distribuyendo los pagos
                                 // Si quiere distribuir algo que no esta pagado
                                 // no lo deja
@@ -152,8 +152,11 @@ class TransaccionController {
                                         cuenta: cuenta2
                                         , importe: importe
                                     )
+                                    log.debug("Validando que cuenta tenga auxiliares : $cuenta2.tieneAuxiliares")
                                     if (cuenta2.tieneAuxiliares) {
-                                        movimiento2.auxiliar = Auxiliar.findByCuenta(cuenta2)
+                                        def x = Auxiliar.find("from Auxiliar a inner join a.cuentas cuenta where cuenta = ?",[cuenta2],[max:1])
+                                        log.debug("Asignando el auxiliar : ${x}")
+                                        movimiento2.auxiliar = x[0]
                                     }
                                 }
                                 transaccion.addToOrigenes(movimiento2)
@@ -176,21 +179,25 @@ class TransaccionController {
         def cuentas = Cuenta.buscaPorFiltro(params.term, usuario.empresa.id).list([max:10])
         def lista = []
         for(auxiliar in auxiliares) {
-            lista << [id:auxiliar.cuenta.id,value:"${auxiliar.numero} | ${auxiliar.descripcion} (AUXILIAR)",auxiliares:false,auxiliar:true,cuenta:"${auxiliar.cuenta.numero} | ${auxiliar.cuenta.descripcion}",auxiliarId:auxiliar.id]
+            for(cuenta in auxiliar.cuentas) {
+                lista << [id:cuenta.id,value:"${auxiliar.numero} | ${auxiliar.descripcion} (AUXILIAR de ${cuenta.descripcion})",tieneAuxiliares:false,auxiliar:true,cuenta:"${cuenta.numero} | ${cuenta.descripcion}",auxiliarId:auxiliar.id]
+            }
         }
         for(cuenta in cuentas) {
-            lista << [id:cuenta.id,value:"$cuenta.numero | $cuenta.descripcion",auxiliares:cuenta.tieneAuxiliares,auxiliar:false]
+            lista << [id:cuenta.id,value:"$cuenta.numero | $cuenta.descripcion",tieneAuxiliares:cuenta.tieneAuxiliares,auxiliar:false]
         }
         def resultado = lista as grails.converters.JSON
         render resultado
     }
 
     def auxiliares = {
-        params.filtro = params.term
+        def usuario = springSecurityService.currentUser
         def auxiliares = Auxiliar.buscaPorFiltro(params.term, usuario.empresa.id).list([max:10])
         def lista = []
         for(auxiliar in auxiliares) {
-            lista << [id:auxiliar.id,value:"${auxiliar.numero} | ${auxiliar.descripcion}"]
+            for(cuenta in auxiliar.cuentas) {
+                lista << [id:auxiliar.id,value:"${auxiliar.numero} | ${auxiliar.descripcion} (AUXILIAR de ${cuenta.descripcion})",cuenta:"${cuenta.numero} | ${cuenta.descripcion}",cuentaId:cuenta.id]
+            }
         }
         def resultado = lista as grails.converters.JSON
         render resultado
@@ -229,6 +236,20 @@ class TransaccionController {
 		}
 
         return resultado
+    }
+
+    def elimina = {
+        Transaccion.withTransaction {
+            def usuario = springSecurityService.currentUser
+            def transaccion = Transaccion.get(params.id)
+            def poliza = transaccion.poliza
+            def folio = transaccion.folio
+            if (transaccion.poliza.estatus == 'ABIERTA' && poliza.empresa == usuario.empresa) {
+                transaccion.delete()
+            }
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'transaccion.label'), folio])
+            redirect(controller:'poliza',action:'edita',id:poliza.id)
+        }
     }
 
 }
