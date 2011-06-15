@@ -18,8 +18,8 @@ class AlmacenController {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
                 def usuario = springSecurityService.currentUser
 		//[almacenes: Almacen.buscaPorEmpresa(usuario.empresa, params), totalDeAlmacenes: Almacen.countByEmpresa(usuario.empresa)]
-//                [almacenes: Almacen.findAllByEmpresa(usuario.empresa, params), totalDeAlmacenes: Almacen.countByEmpresa(usuario.empresa)]
-                [almacenes: Almacen.list(params), totalDeAlmacenes: Almacen.count()]
+                [almacenes: Almacen.findAllByEmpresa(usuario.empresa, params), totalDeAlmacenes: Almacen.countByEmpresa(usuario.empresa)]
+//                [almacenes: Almacen.list(params), totalDeAlmacenes: Almacen.count()]
 	}
 
     def nuevo = {
