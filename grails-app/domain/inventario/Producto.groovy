@@ -29,7 +29,7 @@ class Producto {//implements java.io.Serializable {
     Set lotesSalida
     Set imagenes
 
-//    static transients = ["entradaId","salidaId"]
+    static transients = ["entradaId","salidaId"]
 
     static belongsTo = [TipoProducto, Almacen]
 
