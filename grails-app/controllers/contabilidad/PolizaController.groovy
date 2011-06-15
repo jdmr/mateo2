@@ -34,6 +34,13 @@ class PolizaController {
         return [poliza:poliza]
     }
 
+    def nuevaEgreso = {
+        def poliza = new Poliza()
+        poliza.properties = params
+        poliza.tipo = 'EGRESOS'
+        return [poliza:poliza]
+    }
+
     def crea = {
         Poliza.withTransaction {
             def usuario = springSecurityService.currentUser
@@ -41,8 +48,8 @@ class PolizaController {
             poliza.folio = folioService.temporal()
             poliza.empresa = usuario.empresa
             if (poliza.save(flush: true)) {
-                if (poliza.tipo == 'INGRESOS') {
-                    flash.message = message(code: 'poliza.ingresos.created.message', args: [poliza.folio])
+                if (poliza.tipo == 'INGRESOS' || poliza.tipo == 'EGRESOS') {
+                    flash.message = message(code: 'poliza.created.message', args: [poliza.folio])
                     redirect(controller:"transaccion", action: "nueva", id: poliza.id)
                 } else {
                     flash.message = message(code: 'default.created.message', args: [message(code: 'poliza.label', default: 'Poliza'), poliza.folio])
@@ -83,17 +90,18 @@ class PolizaController {
         }
         else {
             if (poliza.estatus == 'ABIERTA') {
+                def origenes = [:]
+                def destinos = [:]
+                for(transaccion in poliza.transacciones) {
+                    def x = obtieneMovimientos(transaccion.origenes)
+                    def y = obtieneMovimientos(transaccion.destinos)
+                    origenes[transaccion.id] = x
+                    destinos[transaccion.id] = y
+                }
                 if (poliza.tipo == 'INGRESOS') {
-                    def origenes = [:]
-                    def destinos = [:]
-                    for(transaccion in poliza.transacciones) {
-                        def x = obtieneMovimientos(transaccion.origenes)
-                        def y = obtieneMovimientos(transaccion.destinos)
-                        origenes[transaccion.id] = x
-                        destinos[transaccion.id] = y
-                    }
-
                     render(view:'editaIngreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                } else if (poliza.tipo == 'EGRESOS') {
+                    render(view:'editaEgreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
                 } else {
                     return [poliza: poliza]
                 }

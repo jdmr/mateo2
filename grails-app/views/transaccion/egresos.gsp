@@ -28,7 +28,7 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form action="actualizaIngreso" method="post" >
+			<g:form action="actualizaEgreso" method="post" >
 				<g:hiddenField name="id" value="${transaccion?.id}" />
 				<g:hiddenField name="version" value="${transaccion?.version}" />
 				<g:hiddenField name="cuentaId" value="" />
@@ -76,10 +76,10 @@
                     </div>
 
                     <div class="fieldcontain">
-                        <label for="esDebe">
-                            <g:message code="transaccion.esDebe.label" default="esDebe" />
+                        <label for="esHaber">
+                            <g:message code="transaccion.esHaber.label" default="esHaber" />
                         </label>
-                        <input type="checkbox" name="esDebe" value="" id="esDebe" />
+                        <input type="checkbox" name="esHaber" value="" id="esHaber" />
                     </div>
 
                     <div class="fieldcontain">
@@ -192,14 +192,14 @@
                             $("#auxiliarDiv").toggle('blind',{},500, function() {
                                 $("#auxiliar").val($("#cuenta").val());
                                 $("#cuenta").val(ui.item.cuenta);
-                                $("#esDebe").focus();
+                                $("#esHaber").focus();
                             });
                         } else if (ui.item.tieneAuxiliares) {
                             $("#auxiliarDiv").toggle('blind',{},500, function() {
                                 $("#auxiliar").focus();
                             });
                         } else {
-                            $("#esDebe").focus();
+                            $("#esHaber").focus();
                         }
                     }
                 });
@@ -209,7 +209,7 @@
                         $('#auxiliarId').val(ui.item.id);
                         $('#cuentaId').val(ui.item.cuentaId);
                         $('#cuenta').val(ui.item.cuenta);
-                        $("#esDebe").focus();
+                        $("#esHaber").focus();
                     }
                 });
                 

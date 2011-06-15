@@ -102,6 +102,48 @@ class PolizaControllerIntegrationTests extends BaseIntegrationTest {
     }
 
     @Test
+    void debieraCrearPolizaDeIngresos() {
+        authenticateAdmin()
+
+        def organizacion = new Organizacion (
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
+            , nombreCompleto: 'TEST-1'
+        ).save()
+        def empresa = new Empresa (
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
+            , nombreCompleto: 'TEST-1'
+            , organizacion: organizacion
+        ).save()
+        
+        def currentUser = springSecurityService.currentUser
+        currentUser.empresa = empresa
+
+        def ejercicio = new Ejercicio (
+            nombre : 'EJERCICIO1'
+            , empresa : empresa
+        ).save()
+        def libro = new Libro (
+            nombre : 'LIBRO1'
+            , empresa : empresa
+        ).save()
+
+        def controller = new PolizaController()
+        controller.springSecurityService = springSecurityService
+        controller.folioService = folioService
+        def model = controller.nuevaIngreso()
+        assert model.poliza
+
+        controller.params.descripcion = 'TEST-1'
+        controller.params.ejercicio = ejercicio
+        controller.params.libro = libro
+        controller.params.tipo = 'INGRESOS'
+        controller.crea()
+        assert controller.response.redirectedUrl.startsWith('/transaccion/nueva')
+    }
+
+    @Test
     void debieraActualizarPoliza() {
         authenticateAdmin()
 
