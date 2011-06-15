@@ -7,8 +7,7 @@ class Almacen {//implements java.io.Serializable {
     String codigo
     String nombre
     Empresa empresa
-//    String nombreCompleto
-        //A la hora de traer el nombre hay problemas porque no encuentra la empresa/organizacion
+    String nombreCompleto
     Set productos
     Set tiposProducto
     Set entradas
@@ -18,8 +17,7 @@ class Almacen {//implements java.io.Serializable {
     //Creo que debe tener una lista de el personal autorizado al Almacen
     Set usuarios
 
-//    static transients = ['nombreCompleto']
-        //por lo de serializable
+    static transients = ['nombreCompleto']
 
     static belongsTo = [Empresa]
 
@@ -52,9 +50,9 @@ class Almacen {//implements java.io.Serializable {
 
     }
 
-//    String getNombreCompleto() {
-//        return "$empresa.organizacion.nombre | $empresa.nombre | $nombre"
-//    }
+    String getNombreCompleto() {
+        return "$empresa.organizacion.nombre | $empresa.nombre | $nombre"
+    }
 
     String toString() {
         return nombre

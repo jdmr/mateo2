@@ -32,6 +32,7 @@ class AlmacenController {
         def almacen = new Almacen(params)
         def usuario = springSecurityService.currentUser
         almacen.empresa = usuario.empresa
+        almacen.nombreCompleto = 
         if (almacen.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'almacen.label', default: 'Almacen'), almacen.nombre])
             redirect(action: "ver", id: almacen.id)
