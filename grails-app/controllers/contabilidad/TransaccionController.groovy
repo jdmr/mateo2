@@ -2,6 +2,7 @@ package contabilidad
 
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
+import general.Tag
 
 @Secured(['ROLE_USER'])
 class TransaccionController {
@@ -9,7 +10,7 @@ class TransaccionController {
     def springSecurityService
     def folioService
 
-    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
+    static allowedMethods = [crea: "POST", actualiza: "POST"]
 
     def index = {
         redirect(controller:'poliza', action: "lista", params: params)
@@ -57,6 +58,17 @@ class TransaccionController {
                 def usuario = springSecurityService.currentUser
                 transaccion.empresa = usuario.empresa
 
+                log.debug("TAGS: ${transaccion.tags}")
+                def tags = transaccion.tags?.tokenize(',')
+                log.debug("TOKENS: ${tags}")
+                for(tag in tags) {
+                    tag = tag.tr('A-Z','a-z')
+                    def x = Tag.findByOrganizacionAndNombre(usuario.empresa.organizacion, tag)
+                    if (!x) {
+                        new Tag(nombre: tag, organizacion: usuario.empresa.organizacion).save()
+                    }
+                }
+
                 if (params.importe) {
                     if (params.cuentaId) {
                         def cuenta = Cuenta.findByOrganizacionAndId(usuario.empresa.organizacion, params.cuentaId)
@@ -71,7 +83,7 @@ class TransaccionController {
                                 auxiliar = Auxiliar.findByOrganizacionAndId(usuario.empresa.organizacion, params.auxiliarId)
                                 movimiento.auxiliar = auxiliar
                             }
-                            if (params.esDebe) {
+                            if (params.esDebe != null) {
                                 // Valido si esta distribuyendo los pagos
                                 // Si quiere distribuir algo que no esta pagado
                                 // no lo deja
@@ -129,6 +141,7 @@ class TransaccionController {
                                         }
                                     }
                                     transaccion.save(flush:true)
+
                                 } else {
                                     // No se puede distribuir dinero que no se ha especificado
                                     // a quien se le va a entregar
@@ -152,14 +165,18 @@ class TransaccionController {
                                         cuenta: cuenta2
                                         , importe: importe
                                     )
+                                    log.debug("Validando que cuenta tenga auxiliares : $cuenta2.tieneAuxiliares")
                                     if (cuenta2.tieneAuxiliares) {
-                                        movimiento2.auxiliar = Auxiliar.findByCuenta(cuenta2)
+                                        def x = Auxiliar.find("from Auxiliar a inner join a.cuentas cuenta where cuenta = ?",[cuenta2],[max:1])
+                                        log.debug("Asignando el auxiliar : ${x}")
+                                        movimiento2.auxiliar = x[0]
                                     }
                                 }
                                 transaccion.addToOrigenes(movimiento2)
                                 transaccion.addToDestinos(movimiento)
                                 transaccion.importe = transaccion.importe.add(importe)
                                 transaccion.save(flush:true)
+
                             }
                         } // si encontro la cuenta
                     } // si trae una cuenta
@@ -176,21 +193,25 @@ class TransaccionController {
         def cuentas = Cuenta.buscaPorFiltro(params.term, usuario.empresa.id).list([max:10])
         def lista = []
         for(auxiliar in auxiliares) {
-            lista << [id:auxiliar.cuenta.id,value:"${auxiliar.numero} | ${auxiliar.descripcion} (AUXILIAR)",auxiliares:false,auxiliar:true,cuenta:"${auxiliar.cuenta.numero} | ${auxiliar.cuenta.descripcion}",auxiliarId:auxiliar.id]
+            for(cuenta in auxiliar.cuentas) {
+                lista << [id:cuenta.id,value:"${auxiliar.numero} | ${auxiliar.descripcion} (AUXILIAR de ${cuenta.descripcion})",tieneAuxiliares:false,auxiliar:true,cuenta:"${cuenta.numero} | ${cuenta.descripcion}",auxiliarId:auxiliar.id]
+            }
         }
         for(cuenta in cuentas) {
-            lista << [id:cuenta.id,value:"$cuenta.numero | $cuenta.descripcion",auxiliares:cuenta.tieneAuxiliares,auxiliar:false]
+            lista << [id:cuenta.id,value:"$cuenta.numero | $cuenta.descripcion",tieneAuxiliares:cuenta.tieneAuxiliares,auxiliar:false]
         }
         def resultado = lista as grails.converters.JSON
         render resultado
     }
 
     def auxiliares = {
-        params.filtro = params.term
+        def usuario = springSecurityService.currentUser
         def auxiliares = Auxiliar.buscaPorFiltro(params.term, usuario.empresa.id).list([max:10])
         def lista = []
         for(auxiliar in auxiliares) {
-            lista << [id:auxiliar.id,value:"${auxiliar.numero} | ${auxiliar.descripcion}"]
+            for(cuenta in auxiliar.cuentas) {
+                lista << [id:auxiliar.id,value:"${auxiliar.numero} | ${auxiliar.descripcion} (AUXILIAR de ${cuenta.descripcion})",cuenta:"${cuenta.numero} | ${cuenta.descripcion}",cuentaId:cuenta.id]
+            }
         }
         def resultado = lista as grails.converters.JSON
         render resultado
@@ -231,4 +252,22 @@ class TransaccionController {
         return resultado
     }
 
+    def elimina = {
+        Transaccion.withTransaction {
+            def usuario = springSecurityService.currentUser
+            def transaccion = Transaccion.get(params.id)
+            def poliza = transaccion.poliza
+            def folio = transaccion.folio
+            if (transaccion.poliza.estatus == 'ABIERTA' && poliza.empresa == usuario.empresa) {
+                transaccion.delete()
+            }
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'transaccion.label'), folio])
+            redirect(controller:'poliza',action:'edita',id:poliza.id)
+        }
+    }
+
+    def tags = {
+        def usuario = springSecurityService.currentUser
+        render Tag.buscaPorFiltro("%${params.term}%",usuario.empresa.organizacion.id).list([max:10])*.nombre as grails.converters.JSON
+    }
 }

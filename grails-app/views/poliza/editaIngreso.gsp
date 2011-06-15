@@ -13,7 +13,7 @@
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="list" action="lista"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="create" action="nueva"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                <li><g:link class="create" controller="transaccion" action="nueva" id="${poliza.id}"><g:message code="poliza.button.nuevaTransaccion.label" /></g:link></li>
 			</ul>
 		</div>
 		<div id="edit-poliza" class="content scaffold-edit" role="main">
@@ -43,7 +43,8 @@
                                     <thead>
                                       <tr>
                                         <th style="width:200px;"><g:message code="transaccion.folio.label" /></th>
-                                        <th></th>
+                                        <th><g:message code="transaccion.descripcion.label" /></th>
+                                        <th><g:message code="transaccion.tags.label" /></th>
                                         <th style="text-align:right; width:150px;"></th>
                                       </tr>
                                     </thead>
@@ -53,19 +54,20 @@
                                         <tr>
                                             <td>${transaccion.folio}</td>
                                             <td>${transaccion.descripcion}</td>
+                                            <td>${transaccion.tags}</td>
                                             <td style="text-align:right; width:150px;"><g:link controller="transaccion" action="edita" id="${transaccion.id}"><g:message code="default.button.edit.label" /></g:link> | <g:link controller="transaccion" action="elimina" id="${transaccion.id}"><g:message code="default.button.delete.label" /></g:link></td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3">
+                                            <td colspan="4">
                                                 <table>
                                                     <thead>
                                                         <tr>
-                                                            <th style="width:30px;">${message(code:'transaccion.cuenta.label')}</th>
-                                                            <th style="width:30px;">${message(code:'transaccion.auxiliar.label')}</th>
-                                                            <th>${message(code:'transaccion.concepto.label')}</th>
-                                                            <th style='text-align:right;width:100px;'>${message(code:'transaccion.parcial.label')}</th>
-                                                            <th style='text-align:right;width:100px;'>${message(code:'transaccion.debe.label')}</th>
-                                                            <th style='text-align:right;width:100px;'>${message(code:'transaccion.haber.label')}</th>
+                                                            <th style="width:100px;">${message(code:'transaccion.cuenta.label')}</th>
+                                                            <th style="width:100px;">${message(code:'transaccion.auxiliar.label')}</th>
+                                                            <th>${message(code:'transaccion.nombre.label')}</th>
+                                                            <th style='text-align:right;width:130px;'>${message(code:'transaccion.parcial.label')}</th>
+                                                            <th style='text-align:right;width:130px;'>${message(code:'transaccion.debe.label')}</th>
+                                                            <th style='text-align:right;width:130px;'>${message(code:'transaccion.haber.label')}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -154,7 +156,9 @@
                 </fieldset>
                 </g:if>
 				<fieldset class="buttons">
+					<g:actionSubmit class="save" action="nuevaTransaccion" value="${message(code: 'poliza.button.nuevaTransaccion.label', default: 'Update')}" />
 					<g:actionSubmit class="save" action="actualiza" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+					<g:actionSubmit class="save" action="cierra" value="${message(code: 'poliza.button.cierra.label', default: 'Cierra')}" onclick="return confirm('${message(code: 'poliza.button.cierra.confirm.message', default: 'Are you sure?')}');" />
 					<g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" formnovalidate="" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 				</fieldset>
 			</g:form>

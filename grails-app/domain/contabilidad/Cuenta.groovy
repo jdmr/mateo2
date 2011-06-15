@@ -61,4 +61,15 @@ class Cuenta {
     String toString() {
         return "$numero | $descripcion"
     }
+
+    boolean equals(o) {
+        boolean result = false
+        if (o != null && o instanceof Cuenta) {
+            Cuenta cuenta = (Cuenta) o
+            if (cuenta.id == this.id) {
+                result = true
+            }
+        }
+        return result
+    }
 }

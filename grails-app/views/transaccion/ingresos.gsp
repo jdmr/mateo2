@@ -3,15 +3,16 @@
 	<head>
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'transaccion.label', default: 'Transacción')}" />
+		<g:set var="polizaName" value="${message(code: 'poliza.label', default: 'Poliza')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
-        <r:require module="jquery-ui" />
+        <r:require module="tagit" />
 	</head>
 	<body>
 		<a href="#edit-cuenta" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="list" action="lista"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+                <li><g:link class="edit" controller="poliza" action="edita" id="${transaccion.poliza.id}"><g:message code="default.edit.label" args="[polizaName]" /></g:link></li>
 				<li><g:link class="create" action="nueva"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
@@ -34,6 +35,17 @@
 				<g:hiddenField name="auxiliarId" value="" />
 
 				<fieldset class="form">
+                    <div class="fieldcontain">
+                        <h3>
+                            <g:message code="transaccion.tags.label" default="tags" />
+                        </h3>
+                        <ul name="tags">
+                          <g:each in="${transaccion?.tags?.tokenize(',')}">
+                            <li>${it}</li>
+                          </g:each>
+                        </ul>
+                    </div>
+
                     <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'descripcion', 'error')} required">
                         <label for="descripcion">
                             <g:message code="transaccion.descripcion.label" default="descripcion" />
@@ -45,31 +57,29 @@
                     <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'importe', 'error')} required">
                         <label for="importe">
                             <g:message code="transaccion.importe.label" default="importe" />
-                            <span class="required-indicator">*</span>
                         </label>
-                        <g:textField name="importe" maxlength="200" required="" value=""/>
+                        <g:textField name="importe" maxlength="200" value="" style="width:400px;"/>
                     </div>
 
                     <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'cuenta', 'error')} required">
                         <label for="cuenta">
                             <g:message code="transaccion.cuenta.label" default="cuenta" />
-                            <span class="required-indicator">*</span>
                         </label>
-                        <g:textField name="cuenta" maxlength="200" required="" value=""/>
+                        <g:textField name="cuenta" maxlength="200" value="" style="width:400px;"/>
                     </div>
 
                     <div id="auxiliarDiv" class="fieldcontain ${hasErrors(bean: transaccion, field: 'auxiliar', 'error')} required" style="display:none;">
                         <label for="auxiliar">
                             <g:message code="transaccion.auxiliar.label" default="auxiliar" />
                         </label>
-                        <g:textField name="auxiliar" maxlength="200" value=""/>
+                        <g:textField name="auxiliar" maxlength="200" value="" style="width:400px;"/>
                     </div>
 
-                    <div class="fieldcontain ${hasErrors(bean: transaccion, field: 'esDebe', 'error')} required">
+                    <div class="fieldcontain">
                         <label for="esDebe">
                             <g:message code="transaccion.esDebe.label" default="esDebe" />
                         </label>
-                        <g:checkBox name="esDebe" value=""/>
+                        <input type="checkbox" name="esDebe" value="" id="esDebe" />
                     </div>
 
                     <div class="fieldcontain">
@@ -83,12 +93,12 @@
                         <table style="margin:0;">
                             <thead>
                                 <tr>
-                                    <th style="width:30px;">${message(code:'transaccion.cuenta.label')}</th>
-                                    <th style="width:30px;">${message(code:'transaccion.auxiliar.label')}</th>
-                                    <th>${message(code:'transaccion.descripcion.label')}</th>
-                                    <th style='text-align:right;width:100px;'>${message(code:'transaccion.parcial.label')}</th>
-                                    <th style='text-align:right;width:100px;'>${message(code:'transaccion.debe.label')}</th>
-                                    <th style='text-align:right;width:100px;'>${message(code:'transaccion.haber.label')}</th>
+                                    <th style="width:100px;">${message(code:'transaccion.cuenta.label')}</th>
+                                    <th style="width:100px;">${message(code:'transaccion.auxiliar.label')}</th>
+                                    <th>${message(code:'transaccion.nombre.label')}</th>
+                                    <th style='text-align:right;width:130px;'>${message(code:'transaccion.parcial.label')}</th>
+                                    <th style='text-align:right;width:130px;'>${message(code:'transaccion.debe.label')}</th>
+                                    <th style='text-align:right;width:130px;'>${message(code:'transaccion.haber.label')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -167,6 +177,7 @@
 				<fieldset class="buttons">
 					<g:actionSubmit class="save" action="actualiza" value="${message(code: 'default.button.update.label', default: 'Update')}" />
 					<g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" formnovalidate="" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                    <g:link class="edit" controller="poliza" action="edita" id="${transaccion.poliza.id}"><g:message code="default.edit.label" args="[polizaName]" /></g:link>
 				</fieldset>
 			</g:form>
 		</div>
@@ -181,7 +192,7 @@
                             $("#auxiliarDiv").toggle('blind',{},500, function() {
                                 $("#auxiliar").val($("#cuenta").val());
                                 $("#cuenta").val(ui.item.cuenta);
-                                $("#auxiliar").focus();
+                                $("#esDebe").focus();
                             });
                         } else if (ui.item.tieneAuxiliares) {
                             $("#auxiliarDiv").toggle('blind',{},500, function() {
@@ -196,10 +207,13 @@
                     source:"${createLink(action:'auxiliares')}/"+$('#cuentaId').val()
                     ,select: function(event,ui) {
                         $('#auxiliarId').val(ui.item.id);
+                        $('#cuentaId').val(ui.item.cuentaId);
+                        $('#cuenta').val(ui.item.cuenta);
                         $("#esDebe").focus();
                     }
                 });
                 
+                $("ul[name='tags']").tagit({select:true, tagSource: "${g.createLink(action: 'tags')}"});
                 $('#descripcion').select();
                 $('#descripcion').focus();
             });

@@ -113,8 +113,9 @@
                               <table>
                                 <thead>
                                   <tr>
-                                    <th><g:message code="transaccion.folio.label" /></th>
-                                    <th></th>
+                                    <th style="width:200px;"><g:message code="transaccion.folio.label" /></th>
+                                    <th><g:message code="transaccion.descripcion.label" /></th>
+                                    <th style="width:200px;text-align:right;"><g:message code="transaccion.tags.label" /></th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -123,18 +124,19 @@
                                     <tr>
                                         <td>${transaccion.folio}</td>
                                         <td>${transaccion.descripcion}</td>
+                                        <td style="text-align:right;">${transaccion.tags}</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="2">
+                                        <td colspan="3">
                                             <table>
                                                 <thead>
                                                     <tr>
-                                                        <th style="width:30px;">${message(code:'transaccion.cuenta.label')}</th>
-                                                        <th style="width:30px;">${message(code:'transaccion.auxiliar.label')}</th>
+                                                        <th style="width:100px;">${message(code:'transaccion.cuenta.label')}</th>
+                                                        <th style="width:100px;">${message(code:'transaccion.auxiliar.label')}</th>
                                                         <th>${message(code:'transaccion.concepto.label')}</th>
-                                                        <th style='text-align:right;width:100px;'>${message(code:'transaccion.parcial.label')}</th>
-                                                        <th style='text-align:right;width:100px;'>${message(code:'transaccion.debe.label')}</th>
-                                                        <th style='text-align:right;width:100px;'>${message(code:'transaccion.haber.label')}</th>
+                                                        <th style='text-align:right;width:130px;'>${message(code:'transaccion.parcial.label')}</th>
+                                                        <th style='text-align:right;width:130px;'>${message(code:'transaccion.debe.label')}</th>
+                                                        <th style='text-align:right;width:130px;'>${message(code:'transaccion.haber.label')}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -225,8 +227,11 @@
 			<g:form>
 				<fieldset class="buttons">
 					<g:hiddenField name="id" value="${poliza?.id}" />
-					<g:link class="edit" action="edita" id="${poliza?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-					<g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                    <g:if test="${poliza.estatus == 'ABIERTA'}">
+                        <g:link class="edit" action="edita" id="${poliza?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+					    <g:actionSubmit class="save" action="cierra" value="${message(code: 'poliza.button.cierra.label', default: 'Cierra')}" onclick="return confirm('${message(code: 'poliza.button.cierra.confirm.message', default: 'Are you sure?')}');" />
+                        <g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                    </g:if>
 				</fieldset>
 			</g:form>
 		</div>

@@ -9,7 +9,7 @@ class PolizaController {
     def springSecurityService
     def folioService
 
-    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
+    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST", cierra: "POST"]
 
     def index = {
         redirect(action: "lista", params: params)
@@ -82,27 +82,67 @@ class PolizaController {
             redirect(action: "lista")
         }
         else {
-            if (poliza.tipo == 'INGRESOS') {
-                def origenes = [:]
-                def destinos = [:]
-                for(transaccion in poliza.transacciones) {
-                    def x = obtieneMovimientos(transaccion.origenes)
-                    def y = obtieneMovimientos(transaccion.destinos)
-                    origenes[transaccion.id] = x
-                    destinos[transaccion.id] = y
-                }
+            if (poliza.estatus == 'ABIERTA') {
+                if (poliza.tipo == 'INGRESOS') {
+                    def origenes = [:]
+                    def destinos = [:]
+                    for(transaccion in poliza.transacciones) {
+                        def x = obtieneMovimientos(transaccion.origenes)
+                        def y = obtieneMovimientos(transaccion.destinos)
+                        origenes[transaccion.id] = x
+                        destinos[transaccion.id] = y
+                    }
 
-                render(view:'editaIngreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                    render(view:'editaIngreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                } else {
+                    return [poliza: poliza]
+                }
             } else {
-                return [poliza: poliza]
+                flash.message = message(code: 'poliza.cerrada.editar.message', args: [poliza.folio])
+                redirect(action:'lista')
             }
         }
     }
 
     def actualiza = {
         Poliza.withTransaction {
-            def poliza = Poliza.get(params.id)
+            def usuario = springSecurityService.currentUser
+            def poliza = Poliza.findByEmpresaAndId(usuario.empresa, params.id)
             if (poliza) {
+                if (poliza.estatus == 'ABIERTA') {
+                    if (params.version) {
+                        def version = params.version.toLong()
+                        if (poliza.version > version) {
+                            poliza.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'poliza.label', default: 'Poliza')] as Object[], "Another user has updated this Poliza while you were editing")
+                            render(view: "edita", model: [poliza: poliza])
+                            return
+                        }
+                    }
+                    poliza.properties = params
+                    if (!poliza.hasErrors() && poliza.save(flush: true)) {
+                        flash.message = message(code: 'default.updated.message', args: [message(code: 'poliza.label', default: 'Poliza'), poliza.folio])
+                        redirect(action: "ver", id: poliza.id)
+                    }
+                    else {
+                        render(view: "edita", model: [poliza: poliza])
+                    }
+                } else {
+                    flash.message = message(code: 'poliza.cerrada.editar.message', args: [poliza.folio])
+                    redirect(action:'lista')
+                }
+            }
+            else {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
+                redirect(action: "lista")
+            }
+        }
+    }
+
+    def cierra = {
+        Poliza.withTransaction {
+            def usuario = springSecurityService.currentUser
+            def poliza = Poliza.findByEmpresaAndId(usuario.empresa, params.id)
+            if (poliza && poliza.estatus == 'ABIERTA') {
                 if (params.version) {
                     def version = params.version.toLong()
                     if (poliza.version > version) {
@@ -112,6 +152,11 @@ class PolizaController {
                     }
                 }
                 poliza.properties = params
+                poliza.estatus = 'CERRADA'
+                poliza.folio = folioService.poliza()
+                for(transaccion in poliza.transacciones) {
+                    transaccion.folio = folioService.transaccion()
+                }
                 if (!poliza.hasErrors() && poliza.save(flush: true)) {
                     flash.message = message(code: 'default.updated.message', args: [message(code: 'poliza.label', default: 'Poliza'), poliza.folio])
                     redirect(action: "ver", id: poliza.id)
@@ -186,6 +231,34 @@ class PolizaController {
 		}
 
         return resultado
+    }
+
+    def nuevaTransaccion = {
+        Poliza.withTransaction {
+            def poliza = Poliza.get(params.id)
+            if (poliza) {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (poliza.version > version) {
+                        poliza.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'poliza.label', default: 'Poliza')] as Object[], "Another user has updated this Poliza while you were editing")
+                        render(view: "edita", model: [poliza: poliza])
+                        return
+                    }
+                }
+                poliza.properties = params
+                if (!poliza.hasErrors() && poliza.save(flush: true)) {
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'poliza.label', default: 'Poliza'), poliza.folio])
+                    redirect(controller:'transaccion',action: "nueva", id: poliza.id)
+                }
+                else {
+                    render(view: "edita", model: [poliza: poliza])
+                }
+            }
+            else {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
+                redirect(action: "lista")
+            }
+        }
     }
 
 }

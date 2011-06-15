@@ -12,6 +12,7 @@ class Transaccion {
     Set destinos
     Date dateCreated
     Date lastUpdated
+    String tags
 
     static belongsTo = [poliza: Poliza, empresa: Empresa]
 
@@ -23,6 +24,7 @@ class Transaccion {
         folio maxSize:64, unique:'empresa'
         descripcion maxSize:128, blank:false
         importe scale:2, precision:8
+        tags maxSize:200, nullable:true
     }
 
     static mapping = {
