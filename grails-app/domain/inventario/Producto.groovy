@@ -4,23 +4,21 @@ import general.Imagen
 
 class Producto {//implements java.io.Serializable {
     String codigo
-//    String sku
-        //El codigo sirve para lo mismo (creo)
+    String sku
     String nombre
     String descripcion
     String marca
     String modelo
+    String unidadMedida = "Unidades"
+    Boolean fraccion = false
+    String ubicacion
+    BigDecimal iva = new BigDecimal("0.16")
+    // De aqui en adelante se calcula
     BigDecimal precioUnitario = new BigDecimal("0.00")
     BigDecimal ultimoPrecio = new BigDecimal("0.00")
     BigDecimal existencia = new BigDecimal("0.00")
-//    BigDecimal puntoReorden = new BigDecimal("0.00")
-        //nose cual es su utilidad
+    BigDecimal puntoReorden = new BigDecimal("0.00")
     Integer tiempoEntrega = 3
-    String unidadMedida = "Unidades"
-    Boolean fraccion = false
-    BigDecimal iva = new BigDecimal("0.16")
-//    String ubicacion
-        //siempre estara en almacen cuando se existe. Cuando esta en "construccion" no debiera de contar como producto
     Almacen almacen
     TipoProducto tipoProducto
     Date dateCreated
@@ -39,24 +37,24 @@ class Producto {//implements java.io.Serializable {
 
     static constraints = {
         codigo(maxSize:6,unique:'almacen',blank:false)
-//        sku(maxSize:64,unique:'almacen',blank:false)
+        sku(maxSize:64,unique:'almacen',blank:false)
         nombre(maxSize:128,unique:'almacen',blank:false)
         descripcion(nullable:true,maxSize:254,blank:false)
         marca(nullable:true,maxSize:32)
         modelo(nullable:true,maxSize:32)
         precioUnitario(scale:2,precision:8,min:new BigDecimal("0"))
         existencia(scale:3,precision:8,min:new BigDecimal("0"))
-//        puntoReorden(scale:0,precision:0,min:new BigDecimal("0"))
+        puntoReorden(scale:0,precision:0,min:new BigDecimal("0"))
         unidadMedida(maxSize:16,nullable:true)
         iva(scale:2,precision:8,size:new BigDecimal("0")..new BigDecimal("1"))
-//        ubicacion(nullable:true,maxSize:64)
+        ubicacion(nullable:true,maxSize:64)
     }
 
     static mapping = {
         table 'productos'
         imagenes cascade:'all-delete-orphan'
         codigo index:'producto_codigo_idx'
-//        sku index:'producto_sku_idx'
+        sku index:'producto_sku_idx'
         nombre index:'producto_nombre_idx'
         descripcion index:'producto_descripcion_idx'
     }
@@ -66,12 +64,12 @@ class Producto {//implements java.io.Serializable {
             filtro = "%$filtro%"
             or {
                 ilike 'codigo', filtro
-//                ilike 'sku', filtro
+                ilike 'sku', filtro
                 ilike 'nombre', filtro
                 ilike 'descripcion', filtro
                 ilike 'marca', filtro
                 ilike 'modelo', filtro
-//                ilike 'ubicacion', filtro
+                ilike 'ubicacion', filtro
                 tipoProducto {
                     ilike 'nombre', filtro
                 }
@@ -89,10 +87,10 @@ class Producto {//implements java.io.Serializable {
             ilike 'codigo', filtro
         }
 
-//        buscaPorSKU { filtro ->
-//            filtro = "%$filtro%"
-//            ilike 'sku', filtro
-//        }
+        buscaPorSKU { filtro ->
+            filtro = "%$filtro%"
+            ilike 'sku', filtro
+        }
 
         buscaPorNombre { filtro ->
             filtro = "%$filtro%"
@@ -127,8 +125,8 @@ class Producto {//implements java.io.Serializable {
     }
 
     String toString() {
-        //"${sku}|${nombre}"
-        "${codigox  }|${nombre}"
+        "${sku}|${nombre}"
+        //"${codigox  }|${nombre}"
     }
 
 }
