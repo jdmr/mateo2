@@ -14,8 +14,6 @@ class Almacen {//implements java.io.Serializable {
     Set salidas
     Set facturas
     Set folios
-    //Creo que debe tener una lista de el personal autorizado al Almacen
-    Set usuarios
 
     static transients = ['nombreCompleto']
 

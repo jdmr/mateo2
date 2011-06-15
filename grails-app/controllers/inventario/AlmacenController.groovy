@@ -17,9 +17,7 @@ class AlmacenController {
 	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
                 def usuario = springSecurityService.currentUser
-		//[almacenes: Almacen.buscaPorEmpresa(usuario.empresa, params), totalDeAlmacenes: Almacen.countByEmpresa(usuario.empresa)]
                 [almacenes: Almacen.findAllByEmpresa(usuario.empresa, params), totalDeAlmacenes: Almacen.countByEmpresa(usuario.empresa)]
-//                [almacenes: Almacen.list(params), totalDeAlmacenes: Almacen.count()]
 	}
 
     def nuevo = {
@@ -32,7 +30,7 @@ class AlmacenController {
         def almacen = new Almacen(params)
         def usuario = springSecurityService.currentUser
         almacen.empresa = usuario.empresa
-        almacen.nombreCompleto = 
+        almacen.nombreCompleto = almacen.getNombreCompleto()
         if (almacen.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'almacen.label', default: 'Almacen'), almacen.nombre])
             redirect(action: "ver", id: almacen.id)

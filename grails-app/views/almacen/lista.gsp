@@ -28,7 +28,9 @@
 					
 						<g:sortableColumn property="nombre" title="${message(code: 'almacen.nombre.label', default: 'Nombre')}" />
 					
-						<th><g:message code="almacen.empresa.label" default="Empresa" /></th>
+<!--						<th><g:message code="almacen.empresa.label" default="Empresa" /></th>-->
+
+                                                <g:sortableColumn property="nombreCompleto" title="${message(code: 'almacen.nombreCompleto.label', default: 'Nombre Completo')}" />
 					
 					</tr>
 				</thead>
@@ -40,7 +42,9 @@
 					
 						<td>${fieldValue(bean: almacen, field: "nombre")}</td>
 					
-						<td>${fieldValue(bean: almacen, field: "empresa")}</td>
+<!--						<td>${fieldValue(bean: almacen, field: "empresa")}</td>-->
+
+                                                <td>${fieldValue(bean: almacen, field: "nombreCompleto")}</td>
 					
 					</tr>
 				</g:each>
