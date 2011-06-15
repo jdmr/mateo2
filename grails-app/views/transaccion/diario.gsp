@@ -28,7 +28,7 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form action="actualizaEgreso" method="post" >
+			<g:form action="actualizaDiario" method="post" >
 				<g:hiddenField name="id" value="${transaccion?.id}" />
 				<g:hiddenField name="version" value="${transaccion?.version}" />
 				<g:hiddenField name="cuentaId" value="" />
@@ -177,7 +177,7 @@
 
 				</fieldset>
 				<fieldset class="buttons">
-					<g:actionSubmit class="save" action="actualizaEgreso" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+					<g:actionSubmit class="save" action="actualizaDiario" value="${message(code: 'default.button.update.label', default: 'Update')}" />
 					<g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" formnovalidate="" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                     <g:link class="edit" controller="poliza" action="edita" id="${transaccion.poliza.id}"><g:message code="default.edit.label" args="[polizaName]" /></g:link>
 				</fieldset>

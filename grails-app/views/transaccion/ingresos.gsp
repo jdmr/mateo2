@@ -178,7 +178,7 @@
 
 				</fieldset>
 				<fieldset class="buttons">
-					<g:actionSubmit class="save" action="actualiza" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+					<g:actionSubmit class="save" action="actualizaIngreso" value="${message(code: 'default.button.update.label', default: 'Update')}" />
 					<g:actionSubmit class="delete" action="elimina" value="${message(code: 'default.button.delete.label', default: 'Delete')}" formnovalidate="" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                     <g:link class="edit" controller="poliza" action="edita" id="${transaccion.poliza.id}"><g:message code="default.edit.label" args="[polizaName]" /></g:link>
 				</fieldset>

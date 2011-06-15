@@ -41,6 +41,13 @@ class PolizaController {
         return [poliza:poliza]
     }
 
+    def nuevaDiario = {
+        def poliza = new Poliza()
+        poliza.properties = params
+        poliza.tipo = 'DIARIO'
+        return [poliza:poliza]
+    }
+
     def crea = {
         Poliza.withTransaction {
             def usuario = springSecurityService.currentUser
@@ -48,7 +55,7 @@ class PolizaController {
             poliza.folio = folioService.temporal()
             poliza.empresa = usuario.empresa
             if (poliza.save(flush: true)) {
-                if (poliza.tipo == 'INGRESOS' || poliza.tipo == 'EGRESOS') {
+                if (poliza.tipo == 'INGRESOS' || poliza.tipo == 'EGRESOS' || poliza.tipo == 'DIARIO') {
                     flash.message = message(code: 'poliza.created.message', args: [poliza.folio])
                     redirect(controller:"transaccion", action: "nueva", id: poliza.id)
                 } else {
@@ -102,6 +109,8 @@ class PolizaController {
                     render(view:'editaIngreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
                 } else if (poliza.tipo == 'EGRESOS') {
                     render(view:'editaEgreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                } else if (poliza.tipo == 'DIARIO') {
+                    render(view:'editaDiario',model:[poliza:poliza, origenes: origenes, destinos: destinos])
                 } else {
                     return [poliza: poliza]
                 }

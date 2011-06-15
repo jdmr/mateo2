@@ -14,6 +14,7 @@
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="create" action="nuevaIngreso"><g:message code="poliza.nueva.ingreso.label" args="[entityName]" /></g:link></li>
 				<li><g:link class="create" action="nuevaEgreso"><g:message code="poliza.nueva.egreso.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="create" action="nuevaDiario"><g:message code="poliza.nueva.diario.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
 		<div id="list-poliza" class="content scaffold-list" role="main">
