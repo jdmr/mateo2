@@ -1,102 +1,112 @@
 package inventario
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_EMP'])
 class ProductoController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    def springSecurityService
+
+    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: "lista", params: params)
     }
 
-	def list = {
+	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[productoInstanceList: Producto.list(params), productoInstanceTotal: Producto.count()]
+                def usuario = springSecurityService.currentUser
+//		[productos: Producto.findAllByEmpresa(usuario.empresa, params), totalDeProductos: Producto.countByEmpresa(usuario.empresa)]
+                [productos: Producto.list(params), totalDeProductos: Producto.count()]
 	}
 
-    def create = {
-        def productoInstance = new Producto()
-        productoInstance.properties = params
-        return [productoInstance: productoInstance]
+    def nuevo = {
+        def producto = new Producto()
+        producto.properties = params
+        return [producto: producto]
     }
 
-    def save = {
-        def productoInstance = new Producto(params)
-        if (productoInstance.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'producto.label', default: 'Producto'), productoInstance.id])
-            redirect(action: "show", id: productoInstance.id)
+    def crea = {
+        def producto = new Producto(params)
+        def usuario = springSecurityService.currentUser
+        producto.empresa = usuario.empresa
+        if (producto.save(flush: true)) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'producto.label', default: 'Producto'), producto.codigo])
+            redirect(action: "ver", id: producto.id)
         }
         else {
-            render(view: "create", model: [productoInstance: productoInstance])
+            render(view: "nuevo", model: [producto: producto])
         }
     }
 
-    def show = {
-        def productoInstance = Producto.get(params.id)
-        if (!productoInstance) {
+    def ver = {
+        def producto = Producto.get(params.id)
+        if (!producto) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'producto.label', default: 'Producto'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            [productoInstance: productoInstance]
+            [producto: producto]
         }
     }
 
-    def edit = {
-        def productoInstance = Producto.get(params.id)
-        if (!productoInstance) {
+    def edita = {
+        def producto = Producto.get(params.id)
+        if (!producto) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'producto.label', default: 'Producto'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            return [productoInstance: productoInstance]
+            return [producto: producto]
         }
     }
 
-    def update = {
-        def productoInstance = Producto.get(params.id)
-        if (productoInstance) {
+    def actualiza = {
+        def producto = Producto.get(params.id)
+        if (producto) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (productoInstance.version > version) {
+                if (producto.version > version) {
                     
-                    productoInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'producto.label', default: 'Producto')] as Object[], "Another user has updated this Producto while you were editing")
-                    render(view: "edit", model: [productoInstance: productoInstance])
+                    producto.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'producto.label', default: 'Producto')] as Object[], "Another user has updated this Producto while you were editing")
+                    render(view: "edita", model: [producto: producto])
                     return
                 }
             }
-            productoInstance.properties = params
-            if (!productoInstance.hasErrors() && productoInstance.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'producto.label', default: 'Producto'), productoInstance.id])
-                redirect(action: "show", id: productoInstance.id)
+            producto.properties = params
+            if (!producto.hasErrors() && producto.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'producto.label', default: 'Producto'), producto.codigo])
+                redirect(action: "ver", id: producto.id)
             }
             else {
-                render(view: "edit", model: [productoInstance: productoInstance])
+                render(view: "edita", model: [producto: producto])
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'producto.label', default: 'Producto'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 
-    def delete = {
-        def productoInstance = Producto.get(params.id)
-        if (productoInstance) {
+    def elimina = {
+        def producto = Producto.get(params.id)
+        if (producto) {
+            def nombre
             try {
-                productoInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'producto.label', default: 'Producto'), params.id])
-                redirect(action: "list")
+                nombre = producto.nombre
+                producto.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'producto.label', default: 'Producto'), params.codigo])
+                redirect(action: "lista")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'producto.label', default: 'Producto'), params.id])
-                redirect(action: "show", id: params.id)
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'producto.label', default: 'Producto'), params.codigo])
+                redirect(action: "ver", id: params.id)
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'producto.label', default: 'Producto'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 }

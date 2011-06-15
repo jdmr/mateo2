@@ -1,102 +1,113 @@
 package inventario
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_EMP'])
 class FacturaAlmacenController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    def springSecurityService
+
+    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: "lista", params: params)
     }
 
-	def list = {
+	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[facturaAlmacenInstanceList: FacturaAlmacen.list(params), facturaAlmacenInstanceTotal: FacturaAlmacen.count()]
+                def usuario = springSecurityService.currentUser
+//                [facturaAlmacenList: FacturaAlmacen.buscaPorAlmacen(usuario.empresa, params), facturaAlmacenTotal: FacturaAlmacen.countByEmpresa(usuario.empresa)]
+//		[facturaAlmacenes: FacturaAlmacen.findAllByEmpresa(usuario.empresa, params), totalDeFacturaAlmacenes: FacturaAlmacen.countByEmpresa(usuario.empresa)]
+                [facturaAlmacenes: FacturaAlmacen.list(params), totalDeFacturaAlmacenes: FacturaAlmacen.count()]
 	}
 
-    def create = {
-        def facturaAlmacenInstance = new FacturaAlmacen()
-        facturaAlmacenInstance.properties = params
-        return [facturaAlmacenInstance: facturaAlmacenInstance]
+    def nueva = {
+        def facturaAlmacen = new FacturaAlmacen()
+        facturaAlmacen.properties = params
+        return [facturaAlmacen: facturaAlmacen]
     }
 
-    def save = {
-        def facturaAlmacenInstance = new FacturaAlmacen(params)
-        if (facturaAlmacenInstance.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), facturaAlmacenInstance.id])
-            redirect(action: "show", id: facturaAlmacenInstance.id)
+    def crea = {
+        def facturaAlmacen = new FacturaAlmacen(params)
+        def usuario = springSecurityService.currentUser
+        facturaAlmacen.empresa = usuario.empresa
+        if (facturaAlmacen.save(flush: true)) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), facturaAlmacen.folio])
+            redirect(action: "ver", id: facturaAlmacen.id)
         }
         else {
-            render(view: "create", model: [facturaAlmacenInstance: facturaAlmacenInstance])
+            render(view: "nueva", model: [facturaAlmacen: facturaAlmacen])
         }
     }
 
-    def show = {
-        def facturaAlmacenInstance = FacturaAlmacen.get(params.id)
-        if (!facturaAlmacenInstance) {
+    def ver = {
+        def facturaAlmacen = FacturaAlmacen.get(params.id)
+        if (!facturaAlmacen) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            [facturaAlmacenInstance: facturaAlmacenInstance]
+            [facturaAlmacen: facturaAlmacen]
         }
     }
 
-    def edit = {
-        def facturaAlmacenInstance = FacturaAlmacen.get(params.id)
-        if (!facturaAlmacenInstance) {
+    def edita = {
+        def facturaAlmacen = FacturaAlmacen.get(params.id)
+        if (!facturaAlmacen) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            return [facturaAlmacenInstance: facturaAlmacenInstance]
+            return [facturaAlmacen: facturaAlmacen]
         }
     }
 
-    def update = {
-        def facturaAlmacenInstance = FacturaAlmacen.get(params.id)
-        if (facturaAlmacenInstance) {
+    def actualiza = {
+        def facturaAlmacen = FacturaAlmacen.get(params.id)
+        if (facturaAlmacen) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (facturaAlmacenInstance.version > version) {
+                if (facturaAlmacen.version > version) {
                     
-                    facturaAlmacenInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen')] as Object[], "Another user has updated this FacturaAlmacen while you were editing")
-                    render(view: "edit", model: [facturaAlmacenInstance: facturaAlmacenInstance])
+                    facturaAlmacen.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen')] as Object[], "Another user has updated this FacturaAlmacen while you were editing")
+                    render(view: "edita", model: [facturaAlmacen: facturaAlmacen])
                     return
                 }
             }
-            facturaAlmacenInstance.properties = params
-            if (!facturaAlmacenInstance.hasErrors() && facturaAlmacenInstance.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), facturaAlmacenInstance.id])
-                redirect(action: "show", id: facturaAlmacenInstance.id)
+            facturaAlmacen.properties = params
+            if (!facturaAlmacen.hasErrors() && facturaAlmacen.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), facturaAlmacen.folio])
+                redirect(action: "ver", id: facturaAlmacen.id)
             }
             else {
-                render(view: "edit", model: [facturaAlmacenInstance: facturaAlmacenInstance])
+                render(view: "edita", model: [facturaAlmacen: facturaAlmacen])
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 
-    def delete = {
-        def facturaAlmacenInstance = FacturaAlmacen.get(params.id)
-        if (facturaAlmacenInstance) {
+    def elimina = {
+        def facturaAlmacen = FacturaAlmacen.get(params.id)
+        if (facturaAlmacen) {
+            def nombre
             try {
-                facturaAlmacenInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.id])
-                redirect(action: "list")
+                nombre = facturaAlmacen.nombre
+                facturaAlmacen.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.folio])
+                redirect(action: "lista")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.id])
-                redirect(action: "show", id: params.id)
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.folio])
+                redirect(action: "ver", id: params.id)
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 }

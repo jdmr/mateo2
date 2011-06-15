@@ -1,102 +1,112 @@
 package inventario
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_EMP'])
 class TipoProductoController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    def springSecurityService
+
+    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: "lista", params: params)
     }
 
-	def list = {
+	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[tipoProductoInstanceList: TipoProducto.list(params), tipoProductoInstanceTotal: TipoProducto.count()]
+		def usuario = springSecurityService.currentUser
+//		[tipoProductos: Entrada.findAllByEmpresa(usuario.empresa, params), totalDeTipoProductos: Entrada.countByEmpresa(usuario.empresa)]
+                [tipoProductos: Entrada.list(params), totalDeTipoProductos: Entrada.count()]
 	}
 
-    def create = {
-        def tipoProductoInstance = new TipoProducto()
-        tipoProductoInstance.properties = params
-        return [tipoProductoInstance: tipoProductoInstance]
+    def nuevo = {
+        def tipoProducto = new TipoProducto()
+        tipoProducto.properties = params
+        return [tipoProducto: tipoProducto]
     }
 
-    def save = {
-        def tipoProductoInstance = new TipoProducto(params)
-        if (tipoProductoInstance.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), tipoProductoInstance.id])
-            redirect(action: "show", id: tipoProductoInstance.id)
+    def crea = {
+        def tipoProducto = new TipoProducto(params)
+        def usuario = springSecurityService.currentUser
+        tipoProducto.empresa = usuario.empresa
+        if (tipoProducto.save(flush: true)) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), tipoProducto.nombre])
+            redirect(action: "ver", id: tipoProducto.id)
         }
         else {
-            render(view: "create", model: [tipoProductoInstance: tipoProductoInstance])
+            render(view: "nuevo", model: [tipoProducto: tipoProducto])
         }
     }
 
-    def show = {
-        def tipoProductoInstance = TipoProducto.get(params.id)
-        if (!tipoProductoInstance) {
+    def ver = {
+        def tipoProducto = TipoProducto.get(params.id)
+        if (!tipoProducto) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            [tipoProductoInstance: tipoProductoInstance]
+            [tipoProducto: tipoProducto]
         }
     }
 
-    def edit = {
-        def tipoProductoInstance = TipoProducto.get(params.id)
-        if (!tipoProductoInstance) {
+    def edita = {
+        def tipoProducto = TipoProducto.get(params.id)
+        if (!tipoProducto) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            return [tipoProductoInstance: tipoProductoInstance]
+            return [tipoProducto: tipoProducto]
         }
     }
 
-    def update = {
-        def tipoProductoInstance = TipoProducto.get(params.id)
-        if (tipoProductoInstance) {
+    def actualiza = {
+        def tipoProducto = TipoProducto.get(params.id)
+        if (tipoProducto) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (tipoProductoInstance.version > version) {
+                if (tipoProducto.version > version) {
                     
-                    tipoProductoInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'tipoProducto.label', default: 'TipoProducto')] as Object[], "Another user has updated this TipoProducto while you were editing")
-                    render(view: "edit", model: [tipoProductoInstance: tipoProductoInstance])
+                    tipoProducto.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'tipoProducto.label', default: 'TipoProducto')] as Object[], "Another user has updated this TipoProducto while you were editing")
+                    render(view: "edita", model: [tipoProducto: tipoProducto])
                     return
                 }
             }
-            tipoProductoInstance.properties = params
-            if (!tipoProductoInstance.hasErrors() && tipoProductoInstance.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), tipoProductoInstance.id])
-                redirect(action: "show", id: tipoProductoInstance.id)
+            tipoProducto.properties = params
+            if (!tipoProducto.hasErrors() && tipoProducto.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), tipoProducto.nombre])
+                redirect(action: "ver", id: tipoProducto.id)
             }
             else {
-                render(view: "edit", model: [tipoProductoInstance: tipoProductoInstance])
+                render(view: "edita", model: [tipoProducto: tipoProducto])
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 
-    def delete = {
-        def tipoProductoInstance = TipoProducto.get(params.id)
-        if (tipoProductoInstance) {
+    def elimina = {
+        def tipoProducto = TipoProducto.get(params.id)
+        if (tipoProducto) {
+            def nombre
             try {
-                tipoProductoInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), params.id])
-                redirect(action: "list")
+                nombre = tipoProducto.nombre
+                tipoProducto.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), params.nombre])
+                redirect(action: "lista")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), params.id])
-                redirect(action: "show", id: params.id)
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), params.nombre])
+                redirect(action: "ver", id: params.id)
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 }

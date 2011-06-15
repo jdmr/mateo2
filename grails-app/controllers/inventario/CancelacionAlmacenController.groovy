@@ -1,102 +1,112 @@
 package inventario
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_EMP'])
 class CancelacionAlmacenController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    def springSecurityService
+
+    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: "lista", params: params)
     }
 
-	def list = {
+	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[cancelacionAlmacenInstanceList: CancelacionAlmacen.list(params), cancelacionAlmacenInstanceTotal: CancelacionAlmacen.count()]
+                def usuario = springSecurityService.currentUser
+//		[cancelacionAlmacenes: CancelacionAlmacen.findAllByEmpresa(usuario.empresa, params), totalDeCancelacionAlmacen: CancelacionAlmacen.countByEmpresa(usuario.empresa)]
+                [cancelacionAlmacenes: CancelacionAlmacen.list(params), totalDeCancelacionAlmacen: CancelacionAlmacen.count()]
 	}
 
-    def create = {
-        def cancelacionAlmacenInstance = new CancelacionAlmacen()
-        cancelacionAlmacenInstance.properties = params
-        return [cancelacionAlmacenInstance: cancelacionAlmacenInstance]
+    def nueva = {
+        def cancelacionAlmacen = new CancelacionAlmacen()
+        cancelacionAlmacen.properties = params
+        return [cancelacionAlmacen: cancelacionAlmacen]
     }
 
-    def save = {
-        def cancelacionAlmacenInstance = new CancelacionAlmacen(params)
-        if (cancelacionAlmacenInstance.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), cancelacionAlmacenInstance.id])
-            redirect(action: "show", id: cancelacionAlmacenInstance.id)
+    def crea = {
+        def cancelacionAlmacen = new CancelacionAlmacen(params)
+        def usuario = springSecurityService.currentUser
+        cancelacionAlmacen.empresa = usuario.empresa
+        if (cancelacionAlmacen.save(flush: true)) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), cancelacionAlmacen.folio])
+            redirect(action: "ver", id: cancelacionAlmacen.id)
         }
         else {
-            render(view: "create", model: [cancelacionAlmacenInstance: cancelacionAlmacenInstance])
+            render(view: "nueva", model: [cancelacionAlmacen: cancelacionAlmacen])
         }
     }
 
-    def show = {
-        def cancelacionAlmacenInstance = CancelacionAlmacen.get(params.id)
-        if (!cancelacionAlmacenInstance) {
+    def ver = {
+        def cancelacionAlmacen = CancelacionAlmacen.get(params.id)
+        if (!cancelacionAlmacen) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            [cancelacionAlmacenInstance: cancelacionAlmacenInstance]
+            [cancelacionAlmacen: cancelacionAlmacen]
         }
     }
 
-    def edit = {
-        def cancelacionAlmacenInstance = CancelacionAlmacen.get(params.id)
-        if (!cancelacionAlmacenInstance) {
+    def edita = {
+        def cancelacionAlmacen = CancelacionAlmacen.get(params.id)
+        if (!cancelacionAlmacen) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            return [cancelacionAlmacenInstance: cancelacionAlmacenInstance]
+            return [cancelacionAlmacen: cancelacionAlmacen]
         }
     }
 
-    def update = {
-        def cancelacionAlmacenInstance = CancelacionAlmacen.get(params.id)
-        if (cancelacionAlmacenInstance) {
+    def actualiza = {
+        def cancelacionAlmacen = CancelacionAlmacen.get(params.id)
+        if (cancelacionAlmacen) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (cancelacionAlmacenInstance.version > version) {
+                if (cancelacionAlmacen.version > version) {
                     
-                    cancelacionAlmacenInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen')] as Object[], "Another user has updated this CancelacionAlmacen while you were editing")
-                    render(view: "edit", model: [cancelacionAlmacenInstance: cancelacionAlmacenInstance])
+                    cancelacionAlmacen.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen')] as Object[], "Another user has updated this CancelacionAlmacen while you were editing")
+                    render(view: "edita", model: [cancelacionAlmacen: cancelacionAlmacen])
                     return
                 }
             }
-            cancelacionAlmacenInstance.properties = params
-            if (!cancelacionAlmacenInstance.hasErrors() && cancelacionAlmacenInstance.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), cancelacionAlmacenInstance.id])
-                redirect(action: "show", id: cancelacionAlmacenInstance.id)
+            cancelacionAlmacen.properties = params
+            if (!cancelacionAlmacen.hasErrors() && cancelacionAlmacen.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), cancelacionAlmacen.folio])
+                redirect(action: "ver", id: cancelacionAlmacen.id)
             }
             else {
-                render(view: "edit", model: [cancelacionAlmacenInstance: cancelacionAlmacenInstance])
+                render(view: "edita", model: [cancelacionAlmacen: cancelacionAlmacen])
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 
-    def delete = {
-        def cancelacionAlmacenInstance = CancelacionAlmacen.get(params.id)
-        if (cancelacionAlmacenInstance) {
+    def elimina = {
+        def cancelacionAlmacen = CancelacionAlmacen.get(params.id)
+        if (cancelacionAlmacen) {
+            def nombre
             try {
-                cancelacionAlmacenInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.id])
-                redirect(action: "list")
+                nombre = cancelacionAlmacen.nombre
+                cancelacionAlmacen.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.folio])
+                redirect(action: "lista")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.id])
-                redirect(action: "show", id: params.id)
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.folio])
+                redirect(action: "ver", id: params.id)
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 }

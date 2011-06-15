@@ -1,102 +1,113 @@
 package inventario
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_EMP'])
 class AlmacenController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    def springSecurityService
+
+    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: "lista", params: params)
     }
 
-	def list = {
+	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[almacenInstanceList: Almacen.list(params), almacenInstanceTotal: Almacen.count()]
+                def usuario = springSecurityService.currentUser
+		//[almacenes: Almacen.buscaPorEmpresa(usuario.empresa, params), totalDeAlmacenes: Almacen.countByEmpresa(usuario.empresa)]
+//                [almacenes: Almacen.findAllByEmpresa(usuario.empresa, params), totalDeAlmacenes: Almacen.countByEmpresa(usuario.empresa)]
+                [almacenes: Almacen.list(params), totalDeAlmacenes: Almacen.count()]
 	}
 
-    def create = {
-        def almacenInstance = new Almacen()
-        almacenInstance.properties = params
-        return [almacenInstance: almacenInstance]
+    def nuevo = {
+        def almacen = new Almacen()
+        almacen.properties = params
+        return [almacen: almacen]
     }
 
-    def save = {
-        def almacenInstance = new Almacen(params)
-        if (almacenInstance.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'almacen.label', default: 'Almacen'), almacenInstance.id])
-            redirect(action: "show", id: almacenInstance.id)
+    def crea = {
+        def almacen = new Almacen(params)
+        def usuario = springSecurityService.currentUser
+        almacen.empresa = usuario.empresa
+        if (almacen.save(flush: true)) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'almacen.label', default: 'Almacen'), almacen.nombre])
+            redirect(action: "ver", id: almacen.id)
         }
         else {
-            render(view: "create", model: [almacenInstance: almacenInstance])
+            render(view: "nuevo", model: [almacen: almacen])
         }
     }
 
-    def show = {
-        def almacenInstance = Almacen.get(params.id)
-        if (!almacenInstance) {
+    def ver = {
+        def almacen = Almacen.get(params.id)
+        if (!almacen) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'almacen.label', default: 'Almacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            [almacenInstance: almacenInstance]
+            [almacen: almacen]
         }
     }
 
-    def edit = {
-        def almacenInstance = Almacen.get(params.id)
-        if (!almacenInstance) {
+    def edita = {
+        def almacen = Almacen.get(params.id)
+        if (!almacen) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'almacen.label', default: 'Almacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            return [almacenInstance: almacenInstance]
+            return [almacen: almacen]
         }
     }
 
-    def update = {
-        def almacenInstance = Almacen.get(params.id)
-        if (almacenInstance) {
+    def actualiza = {
+        def almacen = Almacen.get(params.id)
+        if (almacen) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (almacenInstance.version > version) {
+                if (almacen.version > version) {
                     
-                    almacenInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'almacen.label', default: 'Almacen')] as Object[], "Another user has updated this Almacen while you were editing")
-                    render(view: "edit", model: [almacenInstance: almacenInstance])
+                    almacen.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'almacen.label', default: 'Almacen')] as Object[], "Another user has updated this Almacen while you were editing")
+                    render(view: "edita", model: [almacen: almacen])
                     return
                 }
             }
-            almacenInstance.properties = params
-            if (!almacenInstance.hasErrors() && almacenInstance.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'almacen.label', default: 'Almacen'), almacenInstance.id])
-                redirect(action: "show", id: almacenInstance.id)
+            almacen.properties = params
+            if (!almacen.hasErrors() && almacen.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'almacen.label', default: 'Almacen'), almacen.nombre])
+                redirect(action: "ver", id: almacen.id)
             }
             else {
-                render(view: "edit", model: [almacenInstance: almacenInstance])
+                render(view: "edita", model: [almacen: almacen])
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'almacen.label', default: 'Almacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 
     def delete = {
-        def almacenInstance = Almacen.get(params.id)
-        if (almacenInstance) {
+        def almacen = Almacen.get(params.id)
+        if (almacen) {
+            def nombre
             try {
-                almacenInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'almacen.label', default: 'Almacen'), params.id])
-                redirect(action: "list")
+                nombre = almacen.nombre
+                almacen.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'almacen.label', default: 'Almacen'), params.nombre])
+                redirect(action: "lista")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'almacen.label', default: 'Almacen'), params.id])
-                redirect(action: "show", id: params.id)
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'almacen.label', default: 'Almacen'), params.nombre])
+                redirect(action: "ver", id: params.id)
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'almacen.label', default: 'Almacen'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 }

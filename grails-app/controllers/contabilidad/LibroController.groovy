@@ -16,7 +16,7 @@ class LibroController {
 
 	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        def usuario = springSecurityService.currentUser
+                def usuario = springSecurityService.currentUser
 		[libros: Libro.findAllByEmpresa(usuario.empresa, params), totalDeLibros: Libro.countByEmpresa(usuario.empresa)]
 	}
 
@@ -43,7 +43,7 @@ class LibroController {
         def libro = Libro.get(params.id)
         if (!libro) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'libro.label', default: 'Libro'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
             [libro: libro]

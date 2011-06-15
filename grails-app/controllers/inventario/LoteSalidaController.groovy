@@ -1,102 +1,112 @@
 package inventario
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_EMP'])
 class LoteSalidaController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    def springSecurityService
+
+    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: "lista", params: params)
     }
 
-	def list = {
+	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[loteSalidaInstanceList: LoteSalida.list(params), loteSalidaInstanceTotal: LoteSalida.count()]
+                def usuario = springSecurityService.currentUser
+//		[loteSalidas: LoteSalida.findAllByEmpresa(usuario.empresa, params), totalDeLoteSalidas: LoteSalida.countByEmpresa(usuario.empresa)]
+                [loteSalidas: LoteSalida.list(params), totalDeLoteSalidas: LoteSalida.count()]
 	}
 
-    def create = {
-        def loteSalidaInstance = new LoteSalida()
-        loteSalidaInstance.properties = params
-        return [loteSalidaInstance: loteSalidaInstance]
+    def nuevo = {
+        def loteSalida = new LoteSalida()
+        loteSalida.properties = params
+        return [loteSalida: loteSalida]
     }
 
-    def save = {
-        def loteSalidaInstance = new LoteSalida(params)
-        if (loteSalidaInstance.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), loteSalidaInstance.id])
-            redirect(action: "show", id: loteSalidaInstance.id)
+    def crea = {
+        def loteSalida = new LoteSalida(params)
+        def usuario = springSecurityService.currentUser
+        loteSalida.empresa = usuario.empresa
+        if (loteSalida.save(flush: true)) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), loteSalida.id])
+            redirect(action: "ver", id: loteSalida.id)
         }
         else {
-            render(view: "create", model: [loteSalidaInstance: loteSalidaInstance])
+            render(view: "nuevo", model: [loteSalida: loteSalida])
         }
     }
 
-    def show = {
-        def loteSalidaInstance = LoteSalida.get(params.id)
-        if (!loteSalidaInstance) {
+    def ver = {
+        def loteSalida = LoteSalida.get(params.id)
+        if (!loteSalida) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            [loteSalidaInstance: loteSalidaInstance]
+            [loteSalida: loteSalida]
         }
     }
 
-    def edit = {
-        def loteSalidaInstance = LoteSalida.get(params.id)
-        if (!loteSalidaInstance) {
+    def edita = {
+        def loteSalida = LoteSalida.get(params.id)
+        if (!loteSalida) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            return [loteSalidaInstance: loteSalidaInstance]
+            return [loteSalida: loteSalida]
         }
     }
 
-    def update = {
-        def loteSalidaInstance = LoteSalida.get(params.id)
-        if (loteSalidaInstance) {
+    def actualiza = {
+        def loteSalida = LoteSalida.get(params.id)
+        if (loteSalida) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (loteSalidaInstance.version > version) {
+                if (loteSalida.version > version) {
                     
-                    loteSalidaInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'loteSalida.label', default: 'LoteSalida')] as Object[], "Another user has updated this LoteSalida while you were editing")
-                    render(view: "edit", model: [loteSalidaInstance: loteSalidaInstance])
+                    loteSalida.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'loteSalida.label', default: 'LoteSalida')] as Object[], "Another user has updated this LoteSalida while you were editing")
+                    render(view: "edita", model: [loteSalida: loteSalida])
                     return
                 }
             }
-            loteSalidaInstance.properties = params
-            if (!loteSalidaInstance.hasErrors() && loteSalidaInstance.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), loteSalidaInstance.id])
-                redirect(action: "show", id: loteSalidaInstance.id)
+            loteSalida.properties = params
+            if (!loteSalida.hasErrors() && loteSalida.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), loteSalida.id])
+                redirect(action: "ver", id: loteSalida.id)
             }
             else {
-                render(view: "edit", model: [loteSalidaInstance: loteSalidaInstance])
+                render(view: "edita", model: [loteSalida: loteSalida])
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 
-    def delete = {
-        def loteSalidaInstance = LoteSalida.get(params.id)
-        if (loteSalidaInstance) {
+    def elimina = {
+        def loteSalida = LoteSalida.get(params.id)
+        if (loteSalida) {
+            def nombre
             try {
-                loteSalidaInstance.delete(flush: true)
+                nombre = loteSalida.nombre
+                loteSalida.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), params.id])
-                redirect(action: "list")
+                redirect(action: "lista")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), params.id])
-                redirect(action: "show", id: params.id)
+                redirect(action: "ver", id: params.id)
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'loteSalida.label', default: 'LoteSalida'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 }

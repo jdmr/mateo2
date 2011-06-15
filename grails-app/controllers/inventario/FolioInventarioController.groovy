@@ -1,102 +1,112 @@
 package inventario
 
 import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 
+@Secured(['ROLE_EMP'])
 class FolioInventarioController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    def springSecurityService
+    
+    static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: "lista", params: params)
     }
 
-	def list = {
+	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[folioInventarioInstanceList: FolioInventario.list(params), folioInventarioInstanceTotal: FolioInventario.count()]
+                def usuario = springSecurityService.currentUser
+//		[folioInventarios: FolioInventario.findAllByEmpresa(usuario.empresa, params), totalDeFolioInventarios: FolioInventario.countByEmpresa(usuario.empresa)]
+                [folioInventarios: FolioInventario.list(params), totalDeFolioInventarios: FolioInventario.count()]
 	}
 
-    def create = {
-        def folioInventarioInstance = new FolioInventario()
-        folioInventarioInstance.properties = params
-        return [folioInventarioInstance: folioInventarioInstance]
+    def nuevo = {
+        def folioInventario = new FolioInventario()
+        folioInventario.properties = params
+        return [folioInventario: folioInventario]
     }
 
-    def save = {
-        def folioInventarioInstance = new FolioInventario(params)
-        if (folioInventarioInstance.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), folioInventarioInstance.id])
-            redirect(action: "show", id: folioInventarioInstance.id)
+    def crea = {
+        def folioInventario = new FolioInventario(params)
+        def usuario = springSecurityService.currentUser
+        entrada.empresa = usuario.empresa
+        if (folioInventario.save(flush: true)) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), folioInventario.nombre])
+            redirect(action: "ver", id: folioInventario.id)
         }
         else {
-            render(view: "create", model: [folioInventarioInstance: folioInventarioInstance])
+            render(view: "nuevo", model: [folioInventario: folioInventario])
         }
     }
 
-    def show = {
-        def folioInventarioInstance = FolioInventario.get(params.id)
-        if (!folioInventarioInstance) {
+    def ver = {
+        def folioInventario = FolioInventario.get(params.id)
+        if (!folioInventario) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            [folioInventarioInstance: folioInventarioInstance]
+            [folioInventario: folioInventario]
         }
     }
 
-    def edit = {
-        def folioInventarioInstance = FolioInventario.get(params.id)
-        if (!folioInventarioInstance) {
+    def edita = {
+        def folioInventario = FolioInventario.get(params.id)
+        if (!folioInventario) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
         else {
-            return [folioInventarioInstance: folioInventarioInstance]
+            return [folioInventario: folioInventario]
         }
     }
 
-    def update = {
-        def folioInventarioInstance = FolioInventario.get(params.id)
-        if (folioInventarioInstance) {
+    def actualiza = {
+        def folioInventario = FolioInventario.get(params.id)
+        if (folioInventario) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (folioInventarioInstance.version > version) {
+                if (folioInventario.version > version) {
                     
-                    folioInventarioInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'folioInventario.label', default: 'FolioInventario')] as Object[], "Another user has updated this FolioInventario while you were editing")
-                    render(view: "edit", model: [folioInventarioInstance: folioInventarioInstance])
+                    folioInventario.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'folioInventario.label', default: 'FolioInventario')] as Object[], "Another user has updated this FolioInventario while you were editing")
+                    render(view: "edita", model: [folioInventario: folioInventario])
                     return
                 }
             }
-            folioInventarioInstance.properties = params
-            if (!folioInventarioInstance.hasErrors() && folioInventarioInstance.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), folioInventarioInstance.id])
-                redirect(action: "show", id: folioInventarioInstance.id)
+            folioInventario.properties = params
+            if (!folioInventario.hasErrors() && folioInventario.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), folioInventario.nombre])
+                redirect(action: "ver", id: folioInventario.id)
             }
             else {
-                render(view: "edit", model: [folioInventarioInstance: folioInventarioInstance])
+                render(view: "edita", model: [folioInventario: folioInventario])
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 
-    def delete = {
-        def folioInventarioInstance = FolioInventario.get(params.id)
-        if (folioInventarioInstance) {
+    def elimina = {
+        def folioInventario = FolioInventario.get(params.id)
+        if (folioInventario) {
+            def nombre
             try {
-                folioInventarioInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.id])
-                redirect(action: "list")
+                nombre = folioInventario.nombre
+                folioInventario.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.nombre])
+                redirect(action: "lista")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.id])
-                redirect(action: "show", id: params.id)
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.nombre])
+                redirect(action: "ver", id: params.id)
             }
         }
         else {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.id])
-            redirect(action: "list")
+            redirect(action: "lista")
         }
     }
 }
