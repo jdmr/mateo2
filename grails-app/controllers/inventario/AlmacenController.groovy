@@ -89,7 +89,7 @@ class AlmacenController {
         }
     }
 
-    def delete = {
+    def elimina = {
         def almacen = Almacen.get(params.id)
         if (almacen) {
             def nombre

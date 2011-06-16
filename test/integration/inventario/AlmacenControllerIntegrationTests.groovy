@@ -72,93 +72,96 @@ class AlmacenControllerIntegrationTests extends BaseIntegrationTest {
         def model = controller.nuevo()
         assert model.almacen
 
+        controller.params.codigo = 'TEST-1'
         controller.params.nombre = 'TEST-1'
         controller.crea()
         assert controller.response.redirectedUrl.startsWith('/almacen/ver')
     }
 
-//    @Test
-//    void debieraActualizarEjercicio() {
-//        authenticateAdmin()
-//
-//        def organizacion = new Organizacion (
-//            codigo: 'TST1'
-//            , nombre: 'TEST-1'
-//            , nombreCompleto: 'TEST-1'
-//        ).save()
-//        def empresa = new Empresa (
-//            codigo: 'TST1'
-//            , nombre: 'TEST-1'
-//            , nombreCompleto: 'TEST-1'
-//            , organizacion: organizacion
-//        ).save()
-//
-//        def currentUser = springSecurityService.currentUser
-//        currentUser.empresa = empresa
-//
-//        def ejercicio = new Ejercicio (
-//            nombre: "TEST-1"
-//            , empresa : empresa
-//        ).save()
-//
-//        def controller = new EjercicioController()
-//        controller.springSecurityService = springSecurityService
-//        controller.params.id = ejercicio.id
-//        def model = controller.ver()
-//        assert model.ejercicio
-//        assertEquals 'TEST-1', model.ejercicio.nombre
-//
-//        controller.params.id = ejercicio.id
-//        model = controller.edita()
-//        assert model.ejercicio
-//        assertEquals 'TEST-1', model.ejercicio.nombre
-//
-//        controller.params.id = ejercicio.id
-//        controller.params.version = ejercicio.version
-//        controller.params.nombre = 'TEST-2'
-//        controller.actualiza()
-//        assertEquals "/ejercicio/ver/${ejercicio.id}", controller.response.redirectedUrl
-//
-//        ejercicio.refresh()
-//        assertEquals 'TEST-2', ejercicio.nombre
-//    }
-//
-//    @Test
-//    void debieraEliminarEjercicio() {
-//        authenticateAdmin()
-//
-//        def organizacion = new Organizacion (
-//            codigo: 'TST1'
-//            , nombre: 'TEST-1'
-//            , nombreCompleto: 'TEST-1'
-//        ).save()
-//        def empresa = new Empresa (
-//            codigo: 'TST1'
-//            , nombre: 'TEST-1'
-//            , nombreCompleto: 'TEST-1'
-//            , organizacion: organizacion
-//        ).save()
-//
-//        def currentUser = springSecurityService.currentUser
-//        currentUser.empresa = empresa
-//
-//        def ejercicio = new Ejercicio (
-//            nombre: "TEST-1"
-//            , empresa : empresa
-//        ).save()
-//
-//        def controller = new EjercicioController()
-//        controller.springSecurityService = springSecurityService
-//        controller.params.id = ejercicio.id
-//        def model = controller.ver()
-//        assert model.ejercicio
-//        assertEquals 'TEST-1', model.ejercicio.nombre
-//
-//        controller.params.id = ejercicio.id
-//        controller.elimina()
-//        assertEquals "/ejercicio/lista", controller.response.redirectedUrl
-//
-//        model = Ejercicio.get(ejercicio.id)
-//        assert !model
-//    }
+    @Test
+    void debieraActualizarAlmacen() {
+        authenticateAdmin()
+
+        def organizacion = new Organizacion (
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
+            , nombreCompleto: 'TEST-1'
+        ).save()
+        def empresa = new Empresa (
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
+            , nombreCompleto: 'TEST-1'
+            , organizacion: organizacion
+        ).save()
+
+        def currentUser = springSecurityService.currentUser
+        currentUser.empresa = empresa
+
+        def almacen = new Almacen (
+            codigo: "TST-1"
+            , nombre: "TEST-1"
+            , empresa : empresa
+        ).save()
+
+        def controller = new AlmacenController()
+        controller.springSecurityService = springSecurityService
+        controller.params.id = almacen.id
+        def model = controller.ver()
+        assert model.almacen
+        assertEquals 'TST-1', model.almacen.codigo
+
+        controller.params.id = almacen.id
+        model = controller.edita()
+        assert model.almacen
+        assertEquals 'TST-1', model.almacen.codigo
+
+        controller.params.id = almacen.id
+        controller.params.version = almacen.version
+        controller.params.codigo = 'TST-2'
+        controller.actualiza()
+        assertEquals "/almacen/ver/${almacen.id}", controller.response.redirectedUrl
+
+        almacen.refresh()
+        assertEquals 'TST-2', almacen.codigo
+    }
+
+    @Test
+    void debieraEliminarAlmacen() {
+        authenticateAdmin()
+
+        def organizacion = new Organizacion (
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
+            , nombreCompleto: 'TEST-1'
+        ).save()
+        def empresa = new Empresa (
+            codigo: 'TST1'
+            , nombre: 'TEST-1'
+            , nombreCompleto: 'TEST-1'
+            , organizacion: organizacion
+        ).save()
+
+        def currentUser = springSecurityService.currentUser
+        currentUser.empresa = empresa
+
+        def almacen = new Almacen (
+            codigo: "TST-2"
+            , nombre: "TEST-1"
+            , empresa : empresa
+        ).save()
+
+        def controller = new AlmacenController()
+        controller.springSecurityService = springSecurityService
+        controller.params.id = almacen.id
+        def model = controller.ver()
+        assert model.almacen
+        assertEquals 'TST-2', model.almacen.codigo
+
+        controller.params.id = almacen.id
+        controller.elimina()
+        assertEquals "/almacen/lista", controller.response.redirectedUrl
+
+        model = Almacen.get(almacen.id)
+        assert !model
+    }
 }
