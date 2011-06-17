@@ -14,4 +14,12 @@ class Folio {
     static constraints = {
         nombre blank:false, maxSize: 32, unique:'empresa'
     }
+
+    static mapping = {
+        table 'folios'
+    }
+
+    String toString() {
+        return "$nombre : $valor"
+    }
 }

@@ -98,7 +98,7 @@ class PolizaControllerIntegrationTests extends BaseIntegrationTest {
         controller.params.ejercicio = ejercicio
         controller.params.libro = libro
         controller.crea()
-        assert controller.response.redirectedUrl.startsWith('/poliza/ver')
+        assert controller.response.redirectedUrl.startsWith('/transaccion/nueva')
     }
 
     @Test
@@ -183,11 +183,6 @@ class PolizaControllerIntegrationTests extends BaseIntegrationTest {
         controller.springSecurityService = springSecurityService
         controller.params.id = poliza.id
         def model = controller.ver()
-        assert model.poliza
-        assertEquals 'TEST-1', model.poliza.descripcion
-
-        controller.params.id = poliza.id
-        model = controller.edita()
         assert model.poliza
         assertEquals 'TEST-1', model.poliza.descripcion
 

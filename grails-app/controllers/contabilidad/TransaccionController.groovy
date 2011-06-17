@@ -561,6 +561,6 @@ class TransaccionController {
 
     def tags = {
         def usuario = springSecurityService.currentUser
-        render Tag.buscaPorFiltro("%${params.term}%",usuario.empresa.organizacion.id).list([max:10])*.nombre as grails.converters.JSON
+        render Tag.buscaPorFiltro("%${params.term}%",usuario.empresa.organizacion.id).list([max:10])*.nombre as JSON
     }
 }
