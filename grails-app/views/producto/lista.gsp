@@ -25,7 +25,9 @@
 					<tr>
 					
 						<g:sortableColumn property="codigo" title="${message(code: 'producto.codigo.label', default: 'Codigo')}" />
-					
+
+                                                <g:sortableColumn property="sku" title="${message(code: 'producto.sku.label', default: 'Sku')}" />
+
 						<g:sortableColumn property="nombre" title="${message(code: 'producto.nombre.label', default: 'Nombre')}" />
 					
 						<g:sortableColumn property="descripcion" title="${message(code: 'producto.descripcion.label', default: 'Descripcion')}" />
@@ -34,7 +36,7 @@
 					
 						<g:sortableColumn property="modelo" title="${message(code: 'producto.modelo.label', default: 'Modelo')}" />
 					
-						<g:sortableColumn property="precioUnitario" title="${message(code: 'producto.precioUnitario.label', default: 'Precio Unitario')}" />
+						<g:sortableColumn property="unidadMedida" title="${message(code: 'producto.unidadMedida.label', default: 'Unidad de Medida')}" />
 					
 					</tr>
 				</thead>
@@ -44,7 +46,9 @@
 					
 						<td><g:link action="ver" id="${producto.id}">${fieldValue(bean: producto, field: "codigo")}</g:link></td>
 					
-						<td>${fieldValue(bean: producto, field: "nombre")}</td>
+                                                <td>${fieldValue(bean: producto, field: "sku")}</td>
+
+                                                <td>${fieldValue(bean: producto, field: "nombre")}</td>
 					
 						<td>${fieldValue(bean: producto, field: "descripcion")}</td>
 					
@@ -52,7 +56,7 @@
 					
 						<td>${fieldValue(bean: producto, field: "modelo")}</td>
 					
-						<td>${fieldValue(bean: producto, field: "precioUnitario")}</td>
+						<td>${fieldValue(bean: producto, field: "unidadMedida")}</td>
 					
 					</tr>
 				</g:each>
