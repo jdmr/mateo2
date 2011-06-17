@@ -12,7 +12,7 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="create" action="nuevo"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
 		<div id="list-servicio" class="content scaffold-list" role="main">
@@ -30,36 +30,36 @@
 					
 						<g:sortableColumn property="tags" title="${message(code: 'servicio.tags.label', default: 'Tags')}" />
 					
-						<g:sortableColumn property="dateCreated" title="${message(code: 'servicio.dateCreated.label', default: 'Date Created')}" />
-					
 						<th><g:message code="servicio.empresa.label" default="Empresa" /></th>
+					
+						<g:sortableColumn property="dateCreated" title="${message(code: 'servicio.dateCreated.label', default: 'Date Created')}" />
 					
 						<g:sortableColumn property="lastUpdated" title="${message(code: 'servicio.lastUpdated.label', default: 'Last Updated')}" />
 					
 					</tr>
 				</thead>
 				<tbody>
-				<g:each in="${servicioInstanceList}" status="i" var="servicioInstance">
+				<g:each in="${servicios}" status="i" var="servicio">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link action="show" id="${servicioInstance.id}">${fieldValue(bean: servicioInstance, field: "nombre")}</g:link></td>
+						<td><g:link action="ver" id="${servicio.id}">${fieldValue(bean: servicio, field: "nombre")}</g:link></td>
 					
-						<td>${fieldValue(bean: servicioInstance, field: "descripcion")}</td>
+						<td>${fieldValue(bean: servicio, field: "descripcion")}</td>
 					
-						<td>${fieldValue(bean: servicioInstance, field: "tags")}</td>
+						<td>${fieldValue(bean: servicio, field: "tags")}</td>
 					
-						<td><g:formatDate date="${servicioInstance.dateCreated}" /></td>
+						<td>${fieldValue(bean: servicio, field: "empresa")}</td>
 					
-						<td>${fieldValue(bean: servicioInstance, field: "empresa")}</td>
+						<td><g:formatDate date="${servicio.dateCreated}" /></td>
 					
-						<td><g:formatDate date="${servicioInstance.lastUpdated}" /></td>
+						<td><g:formatDate date="${servicio.lastUpdated}" /></td>
 					
 					</tr>
 				</g:each>
 				</tbody>
 			</table>
 			<div class="pagination">
-				<g:paginate total="${servicioInstanceTotal}" />
+				<g:paginate total="${totalDeServicios}" />
 			</div>
 		</div>
 	</body>

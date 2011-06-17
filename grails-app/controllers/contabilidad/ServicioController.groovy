@@ -32,6 +32,15 @@ class ServicioController {
         def servicio = new Servicio(params)
         servicio.empresa = usuario.empresa
         if (servicio.save(flush: true)) {
+            def tags = servicio.tags?.tokenize(',')
+            for(tag in tags) {
+                tag = tag.tr('A-Z','a-z')
+                def x = Tag.findByOrganizacionAndNombre(usuario.empresa.organizacion, tag)
+                if (!x) {
+                    new Tag(nombre: tag, organizacion: usuario.empresa.organizacion).save()
+                }
+            }
+
             flash.message = message(code: 'default.created.message', args: [message(code: 'servicio.label', default: 'Servicio'), servicio.nombre])
             redirect(action: "ver", id: servicio.id)
         }
@@ -79,7 +88,17 @@ class ServicioController {
             }
             servicio.properties = params
             servicio.empresa = usuario.empresa
+
             if (!servicio.hasErrors() && servicio.save(flush: true)) {
+                def tags = servicio.tags?.tokenize(',')
+                for(tag in tags) {
+                    tag = tag.tr('A-Z','a-z')
+                    def x = Tag.findByOrganizacionAndNombre(usuario.empresa.organizacion, tag)
+                    if (!x) {
+                        new Tag(nombre: tag, organizacion: usuario.empresa.organizacion).save()
+                    }
+                }
+
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'servicio.label', default: 'Servicio'), servicio.nombre])
                 redirect(action: "ver", id: servicio.id)
             }
