@@ -18,7 +18,7 @@ class TipoProductoController {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		def usuario = springSecurityService.currentUser
 //		[tipoProductos: Entrada.findAllByEmpresa(usuario.empresa, params), totalDeTipoProductos: Entrada.countByEmpresa(usuario.empresa)]
-                [tipoProductos: Entrada.list(params), totalDeTipoProductos: Entrada.count()]
+                [tipoProductos: TipoProducto.list(params), totalDeTipoProductos: TipoProducto.count()]
 	}
 
     def nuevo = {
@@ -29,8 +29,8 @@ class TipoProductoController {
 
     def crea = {
         def tipoProducto = new TipoProducto(params)
-        def usuario = springSecurityService.currentUser
-        tipoProducto.empresa = usuario.empresa
+//        def usuario = springSecurityService.currentUser
+//        tipoProducto.empresa = usuario.empresa
         if (tipoProducto.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'tipoProducto.label', default: 'TipoProducto'), tipoProducto.nombre])
             redirect(action: "ver", id: tipoProducto.id)
