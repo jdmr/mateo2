@@ -12,7 +12,7 @@ class Entrada {//implements java.io.Serializable {
     BigDecimal total = new BigDecimal("0.00")
     Boolean devolucion = false
 //    Estatus estatus
-    String estatus
+    String estatus = 'ABIERTA'
 //    Boolean pendiente = false
         //en el estatus se podra ver
     Proveedor proveedor
@@ -35,7 +35,7 @@ class Entrada {//implements java.io.Serializable {
     static constraints = {
         folio(maxSize:64,unique:'almacen')
         factura(blank:false, maxSize:64, unique:'almacen')
-        fechaFactura()
+        fechaFactura(nullable:true)
         iva(scale:2,precision:8,min:new BigDecimal('0'))
         total(scale:2,precision:8,min:new BigDecimal('0'))
         tipoCambio(nullable:true,scale:2,precision:8)

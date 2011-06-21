@@ -29,8 +29,8 @@ class EntradaController {
 
     def crea = {
         def entrada = new Entrada(params)
-        def usuario = springSecurityService.currentUser
-        entrada.empresa = usuario.empresa
+//        def usuario = springSecurityService.currentUser
+//        entrada.empresa = usuario.empresa
         if (entrada.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'entrada.label', default: 'Entrada'), entrada.folio])
             redirect(action: "ver", id: entrada.id)
@@ -92,9 +92,9 @@ class EntradaController {
     def elimina = {
         def entrada = Entrada.get(params.id)
         if (entrada) {
-            def nombre
+//            def nombre
             try {
-                nombre = entrada.nombre
+//                nombre = entrada.nombre
                 entrada.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'entrada.label', default: 'Entrada'), params.folio])
                 redirect(action: "lista")
