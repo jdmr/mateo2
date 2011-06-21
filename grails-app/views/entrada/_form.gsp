@@ -1,45 +1,11 @@
 <%@ page import="inventario.Entrada" %>
 
-
-
-<div class="fieldcontain ${hasErrors(bean: entrada, field: 'folio', 'error')} ">
-	<label for="folio">
-		<g:message code="entrada.folio.label" default="Folio" />
-		
-	</label>
-	<g:textField name="folio" maxlength="64" value="${entrada?.folio}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: entrada, field: 'factura', 'error')} required">
-	<label for="factura">
-		<g:message code="entrada.factura.label" default="Factura" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:textField name="factura" maxlength="64" required="" value="${entrada?.factura}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: entrada, field: 'fechaFactura', 'error')} required">
-	<label for="fechaFactura">
-		<g:message code="entrada.fechaFactura.label" default="Fecha Factura" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:datePicker name="fechaFactura" precision="day" value="${entrada?.fechaFactura}"  />
-</div>
-
 <div class="fieldcontain ${hasErrors(bean: entrada, field: 'iva', 'error')} required">
 	<label for="iva">
 		<g:message code="entrada.iva.label" default="Iva" />
 		<span class="required-indicator">*</span>
 	</label>
 	<g:field type="number" name="iva" min="0" required="" value="${fieldValue(bean: entrada, field: 'iva')}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: entrada, field: 'total', 'error')} required">
-	<label for="total">
-		<g:message code="entrada.total.label" default="Total" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:field type="number" name="total" min="0" required="" value="${fieldValue(bean: entrada, field: 'total')}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: entrada, field: 'tipoCambio', 'error')} ">
@@ -114,12 +80,3 @@
 	</label>
 	<g:select id="proveedor" name="proveedor.id" from="${general.Proveedor.list()}" optionKey="id" required="" value="${entrada?.proveedor?.id}" class="many-to-one"/>
 </div>
-
-<div class="fieldcontain ${hasErrors(bean: entrada, field: 'totalFactura', 'error')} required">
-	<label for="totalFactura">
-		<g:message code="entrada.totalFactura.label" default="Total Factura" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:field type="number" name="totalFactura" required="" value="${fieldValue(bean: entrada, field: 'totalFactura')}"/>
-</div>
-
