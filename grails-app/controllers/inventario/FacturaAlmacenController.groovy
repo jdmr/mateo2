@@ -17,7 +17,6 @@ class FacturaAlmacenController {
 	def lista = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
                 def usuario = springSecurityService.currentUser
-//                [facturaAlmacenList: FacturaAlmacen.buscaPorAlmacen(usuario.empresa, params), facturaAlmacenTotal: FacturaAlmacen.countByEmpresa(usuario.empresa)]
 //		[facturaAlmacenes: FacturaAlmacen.findAllByEmpresa(usuario.empresa, params), totalDeFacturaAlmacenes: FacturaAlmacen.countByEmpresa(usuario.empresa)]
                 [facturaAlmacenes: FacturaAlmacen.list(params), totalDeFacturaAlmacenes: FacturaAlmacen.count()]
 	}
@@ -30,8 +29,8 @@ class FacturaAlmacenController {
 
     def crea = {
         def facturaAlmacen = new FacturaAlmacen(params)
-        def usuario = springSecurityService.currentUser
-        facturaAlmacen.empresa = usuario.empresa
+//        def usuario = springSecurityService.currentUser
+//        facturaAlmacen.empresa = usuario.empresa
         if (facturaAlmacen.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), facturaAlmacen.folio])
             redirect(action: "ver", id: facturaAlmacen.id)
@@ -93,9 +92,9 @@ class FacturaAlmacenController {
     def elimina = {
         def facturaAlmacen = FacturaAlmacen.get(params.id)
         if (facturaAlmacen) {
-            def nombre
+//            def nombre
             try {
-                nombre = facturaAlmacen.nombre
+//                nombre = facturaAlmacen.nombre
                 facturaAlmacen.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'facturaAlmacen.label', default: 'FacturaAlmacen'), params.folio])
                 redirect(action: "lista")

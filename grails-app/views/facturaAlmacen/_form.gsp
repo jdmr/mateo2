@@ -1,15 +1,6 @@
 <%@ page import="inventario.FacturaAlmacen" %>
 
 
-
-<div class="fieldcontain ${hasErrors(bean: facturaAlmacen, field: 'folio', 'error')} ">
-	<label for="folio">
-		<g:message code="facturaAlmacen.folio.label" default="Folio" />
-		
-	</label>
-	<g:textField name="folio" maxlength="64" value="${facturaAlmacen?.folio}"/>
-</div>
-
 <div class="fieldcontain ${hasErrors(bean: facturaAlmacen, field: 'comentarios', 'error')} ">
 	<label for="comentarios">
 		<g:message code="facturaAlmacen.comentarios.label" default="Comentarios" />
@@ -24,14 +15,6 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:field type="number" name="iva" required="" value="${fieldValue(bean: facturaAlmacen, field: 'iva')}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: facturaAlmacen, field: 'total', 'error')} required">
-	<label for="total">
-		<g:message code="facturaAlmacen.total.label" default="Total" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:field type="number" name="total" required="" value="${fieldValue(bean: facturaAlmacen, field: 'total')}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: facturaAlmacen, field: 'estatus', 'error')} ">
@@ -73,14 +56,6 @@
 </li>
 </ul>
 
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: facturaAlmacen, field: 'fecha', 'error')} required">
-	<label for="fecha">
-		<g:message code="facturaAlmacen.fecha.label" default="Fecha" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:datePicker name="fecha" precision="day" value="${facturaAlmacen?.fecha}"  />
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: facturaAlmacen, field: 'salidas', 'error')} ">

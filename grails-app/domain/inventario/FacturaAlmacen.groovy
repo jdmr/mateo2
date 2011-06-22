@@ -5,7 +5,7 @@ import general.Cliente
 class FacturaAlmacen {//implements java.io.Serializable {
     String folio
 //    Estatus estatus
-    String estatus
+    String estatus  = 'ABIERTA'
     String comentarios
     Date fecha
     BigDecimal iva = new BigDecimal('0')
