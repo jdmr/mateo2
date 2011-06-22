@@ -29,8 +29,8 @@ class CancelacionAlmacenController {
 
     def crea = {
         def cancelacionAlmacen = new CancelacionAlmacen(params)
-        def usuario = springSecurityService.currentUser
-        cancelacionAlmacen.empresa = usuario.empresa
+//        def usuario = springSecurityService.currentUser
+//        cancelacionAlmacen.empresa = usuario.empresa
         if (cancelacionAlmacen.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), cancelacionAlmacen.folio])
             redirect(action: "ver", id: cancelacionAlmacen.id)
@@ -92,9 +92,9 @@ class CancelacionAlmacenController {
     def elimina = {
         def cancelacionAlmacen = CancelacionAlmacen.get(params.id)
         if (cancelacionAlmacen) {
-            def nombre
+//            def nombre
             try {
-                nombre = cancelacionAlmacen.nombre
+//                nombre = cancelacionAlmacen.nombre
                 cancelacionAlmacen.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'cancelacionAlmacen.label', default: 'CancelacionAlmacen'), params.folio])
                 redirect(action: "lista")

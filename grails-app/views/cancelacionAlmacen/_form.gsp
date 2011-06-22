@@ -1,15 +1,6 @@
 <%@ page import="inventario.CancelacionAlmacen" %>
 
 
-
-<div class="fieldcontain ${hasErrors(bean: cancelacionAlmacen, field: 'folio', 'error')} required">
-	<label for="folio">
-		<g:message code="cancelacionAlmacen.folio.label" default="Folio" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:textField name="folio" maxlength="64" required="" value="${cancelacionAlmacen?.folio}"/>
-</div>
-
 <div class="fieldcontain ${hasErrors(bean: cancelacionAlmacen, field: 'comentarios', 'error')} ">
 	<label for="comentarios">
 		<g:message code="cancelacionAlmacen.comentarios.label" default="Comentarios" />
@@ -34,13 +25,6 @@
 	<g:select id="salida" name="salida.id" from="${inventario.Salida.list()}" optionKey="id" value="${cancelacionAlmacen?.salida?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: cancelacionAlmacen, field: 'creador', 'error')} required">
-	<label for="creador">
-		<g:message code="cancelacionAlmacen.creador.label" default="Creador" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:textField name="creador" maxlength="64" required="" value="${cancelacionAlmacen?.creador}"/>
-</div>
 
 <div class="fieldcontain ${hasErrors(bean: cancelacionAlmacen, field: 'almacen', 'error')} required">
 	<label for="almacen">
