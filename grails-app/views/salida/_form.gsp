@@ -1,15 +1,6 @@
 <%@ page import="inventario.Salida" %>
 
 
-
-<div class="fieldcontain ${hasErrors(bean: salida, field: 'folio', 'error')} required">
-	<label for="folio">
-		<g:message code="salida.folio.label" default="Folio" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:textField name="folio" maxlength="64" required="" value="${salida?.folio}"/>
-</div>
-
 <div class="fieldcontain ${hasErrors(bean: salida, field: 'reporte', 'error')} ">
 	<label for="reporte">
 		<g:message code="salida.reporte.label" default="Reporte" />
@@ -24,30 +15,6 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:field type="number" name="iva" required="" value="${fieldValue(bean: salida, field: 'iva')}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: salida, field: 'total', 'error')} required">
-	<label for="total">
-		<g:message code="salida.total.label" default="Total" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:field type="number" name="total" required="" value="${fieldValue(bean: salida, field: 'total')}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: salida, field: 'empleado', 'error')} ">
-	<label for="empleado">
-		<g:message code="salida.empleado.label" default="Empleado" />
-		
-	</label>
-	<g:textField name="empleado" maxlength="64" value="${salida?.empleado}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: salida, field: 'departamento', 'error')} ">
-	<label for="departamento">
-		<g:message code="salida.departamento.label" default="Departamento" />
-		
-	</label>
-	<g:textField name="departamento" maxlength="64" value="${salida?.departamento}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: salida, field: 'comentarios', 'error')} ">

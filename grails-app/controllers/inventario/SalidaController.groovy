@@ -29,8 +29,8 @@ class SalidaController {
 
     def crea = {
         def salida = new Salida(params)
-        def usuario = springSecurityService.currentUser
-        salida.empresa = usuario.empresa
+//        def usuario = springSecurityService.currentUser
+//        salida.empresa = usuario.empresa
         if (salida.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'salida.label', default: 'Salida'), salida.folio])
             redirect(action: "ver", id: salida.id)
@@ -51,7 +51,7 @@ class SalidaController {
         }
     }
 
-    def edit = {
+    def edita = {
         def salida = Salida.get(params.id)
         if (!salida) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'salida.label', default: 'Salida'), params.id])
@@ -92,9 +92,9 @@ class SalidaController {
     def elimina = {
         def salida = Salida.get(params.id)
         if (salida) {
-            def nombre
+//            def nombre
             try {
-                nombre = salida.nombre
+//                nombre = salida.nombre
                 salida.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'salida.label', default: 'Salida'), params.folio])
                 redirect(action: "lista")

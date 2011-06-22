@@ -13,7 +13,7 @@ class Salida {//implements java.io.Serializable {
         //Se supone que el que atendio es el empleado
     String departamento
 //    Estatus estatus
-    String estatus
+    String estatus = 'ABIERTA'
 //    Boolean facturada = false
         //con el estatus se arregla
     Cliente cliente
