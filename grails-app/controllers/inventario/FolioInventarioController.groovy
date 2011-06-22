@@ -29,8 +29,8 @@ class FolioInventarioController {
 
     def crea = {
         def folioInventario = new FolioInventario(params)
-        def usuario = springSecurityService.currentUser
-        entrada.empresa = usuario.empresa
+//        def usuario = springSecurityService.currentUser
+//        entrada.empresa = usuario.empresa
         if (folioInventario.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), folioInventario.nombre])
             redirect(action: "ver", id: folioInventario.id)
@@ -92,9 +92,9 @@ class FolioInventarioController {
     def elimina = {
         def folioInventario = FolioInventario.get(params.id)
         if (folioInventario) {
-            def nombre
+//            def nombre
             try {
-                nombre = folioInventario.nombre
+//                nombre = folioInventario.nombre
                 folioInventario.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'folioInventario.label', default: 'FolioInventario'), params.nombre])
                 redirect(action: "lista")
