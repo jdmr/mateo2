@@ -10,14 +10,6 @@
 	<g:field type="number" name="cantidad" required="" value="${fieldValue(bean: loteSalida, field: 'cantidad')}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: loteSalida, field: 'precioUnitario', 'error')} required">
-	<label for="precioUnitario">
-		<g:message code="loteSalida.precioUnitario.label" default="Precio Unitario" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:field type="number" name="precioUnitario" required="" value="${fieldValue(bean: loteSalida, field: 'precioUnitario')}"/>
-</div>
-
 <div class="fieldcontain ${hasErrors(bean: loteSalida, field: 'iva', 'error')} required">
 	<label for="iva">
 		<g:message code="loteSalida.iva.label" default="Iva" />
