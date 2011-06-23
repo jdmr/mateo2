@@ -29,8 +29,8 @@ class LoteEntradaController {
 
     def crea = {
         def loteEntrada = new LoteEntrada(params)
-        def usuario = springSecurityService.currentUser
-        loteEntrada.empresa = usuario.empresa
+//        def usuario = springSecurityService.currentUser
+//        loteEntrada.empresa = usuario.empresa
         if (loteEntrada.save(flush: true)) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'loteEntrada.label', default: 'LoteEntrada'), loteEntrada.id])
             redirect(action: "ver", id: loteEntrada.id)
@@ -92,9 +92,9 @@ class LoteEntradaController {
     def elimina = {
         def loteEntrada = LoteEntrada.get(params.id)
         if (loteEntrada) {
-            def nombre
+//            def nombre
             try {
-                nombre = loteEntrada.nombre
+//                nombre = loteEntrada.nombre
                 loteEntrada.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'loteEntrada.label', default: 'LoteEntrada'), params.id])
                 redirect(action: "lista")
