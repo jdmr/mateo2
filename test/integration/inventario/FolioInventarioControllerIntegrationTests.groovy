@@ -107,9 +107,6 @@ class FolioInventarioControllerIntegrationTests extends BaseIntegrationTest {
             , empresa : empresa
         ).save()
 
-//        def currentUser = springSecurityService.currentUser
-//        currentUser.empresa = empresa
-
         def folioInventario = new FolioInventario (
             nombre: "TE-"
             , valor: "123"
@@ -158,9 +155,6 @@ class FolioInventarioControllerIntegrationTests extends BaseIntegrationTest {
             , nombre: "TEST-1"
             , empresa : empresa
         ).save()
-
-//        def currentUser = springSecurityService.currentUser
-//        currentUser.empresa = empresa
 
         def folioInventario = new FolioInventario (
             nombre: "TE-"
