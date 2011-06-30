@@ -1,6 +1,15 @@
 <%@ page import="contabilidad.Servicio" %>
 
-
+<div class="fieldcontain">
+    <h3>
+        <g:message code="servicio.tags.label" default="tags" />
+    </h3>
+    <ul name="tags">
+      <g:each in="${servicio?.tags?.tokenize(',')}">
+        <li>${it}</li>
+      </g:each>
+    </ul>
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: servicio, field: 'nombre', 'error')} required">
 	<label for="nombre">
@@ -16,17 +25,6 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:textArea name="descripcion" maxlength="200" required="" value="${servicio?.descripcion}"/>
-</div>
-
-<div class="fieldcontain">
-    <h3>
-        <g:message code="servicio.tags.label" default="tags" />
-    </h3>
-    <ul name="tags">
-      <g:each in="${servicio?.tags?.tokenize(',')}">
-        <li>${it}</li>
-      </g:each>
-    </ul>
 </div>
 
 <r:script>

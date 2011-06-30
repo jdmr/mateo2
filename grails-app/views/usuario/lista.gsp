@@ -32,7 +32,7 @@
 					
 						<g:sortableColumn property="correo" title="${message(code: 'usuario.correo.label', default: 'Correo')}" />
 					
-						<g:sortableColumn property="authorities" title="${message(code: 'usuario.empresa.label', default: 'Empresa')}" />
+						<g:sortableColumn property="empresa" title="${message(code: 'usuario.empresa.label', default: 'Empresa')}" />
 					
 					</tr>
 				</thead>

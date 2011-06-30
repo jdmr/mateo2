@@ -216,13 +216,13 @@ class UsuarioController {
             rolesFiltrados = roles
         } else if(SpringSecurityUtils.ifAnyGranted('ROLE_ORG')) {
             for(rol in roles) {
-                if (!rol.authority.equals('ROL_ADMIN') && !rol.authority.equals('ROL_ORG')) {
+                if (!rol.authority.equals('ROLE_ADMIN') && !rol.authority.equals('ROLE_ORG')) {
                     rolesFiltrados << rol
                 }
             }
         } else if(SpringSecurityUtils.ifAnyGranted('ROLE_EMP')) {
             for(rol in roles) {
-                if (rol.authority.equals('ROL_USER')) {
+                if (rol.authority.equals('ROLE_USER')) {
                     rolesFiltrados << rol
                 }
             }
