@@ -10,7 +10,6 @@ class Proveedor implements Serializable {
     String fax
     String contacto
     String correo
-
     Empresa empresa
 
     static belongsTo = [Empresa]

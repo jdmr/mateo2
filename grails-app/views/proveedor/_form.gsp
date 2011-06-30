@@ -74,11 +74,3 @@
 	<g:field type="email" name="correo" maxlength="128" value="${proveedorInstance?.correo}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: proveedorInstance, field: 'empresa', 'error')} required">
-	<label for="empresa">
-		<g:message code="proveedor.empresa.label" default="Empresa" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:select id="empresa" name="empresa.id" from="${general.Empresa.list()}" optionKey="id" required="" value="${proveedorInstance?.empresa?.id}" class="many-to-one"/>
-</div>
-
