@@ -50,28 +50,6 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${servicio?.origenes}">
-				<li class="fieldcontain">
-					<span id="origenes-label" class="property-label"><g:message code="servicio.origenes.label" default="Origenes" /></span>
-					
-						<g:each in="${servicio.origenes}" var="o">
-						<span class="property-value" aria-labelledby="origenes-label"><g:link controller="componente" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></span>
-						</g:each>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${servicio?.destinos}">
-				<li class="fieldcontain">
-					<span id="destinos-label" class="property-label"><g:message code="servicio.destinos.label" default="Destinos" /></span>
-					
-						<g:each in="${servicio.destinos}" var="d">
-						<span class="property-value" aria-labelledby="destinos-label"><g:link controller="componente" action="show" id="${d.id}">${d?.encodeAsHTML()}</g:link></span>
-						</g:each>
-					
-				</li>
-				</g:if>
-			
 				<g:if test="${servicio?.empresa}">
 				<li class="fieldcontain">
 					<span id="empresa-label" class="property-label"><g:message code="servicio.empresa.label" default="Empresa" /></span>

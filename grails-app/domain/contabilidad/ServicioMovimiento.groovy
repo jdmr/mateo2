@@ -1,25 +1,29 @@
 package contabilidad
 
-class Componente {
+class ServicioMovimiento {
     BigDecimal importe = new BigDecimal('0')
     Cuenta cuenta
     Auxiliar auxiliar
     Date dateCreated
     Date lastUpdated
-    Servicio origen
-    Servicio destino
+    boolean padre = false
+    boolean ultimo = false
+    ServicioTransaccion origen
+    ServicioTransaccion destino
 
-    static belongsTo = [cuenta: Cuenta, origen: Servicio, destino: Transaccion]
+    static transients = ['padre','ultimo']
+
+    static belongsTo = [cuenta:Cuenta, origen:ServicioTransaccion, destino:ServicioTransaccion]
 
     static constraints = {
-        importe sclae:2, precision:8
+        importe scale:2, precision:8
         auxiliar nullable:true
         origen nullable:true
         destino nullable:true
     }
 
     static mapping = {
-        table 'componentes'
+        table 'servicio_movimiento'
     }
 
     String toString() {

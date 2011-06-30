@@ -7,17 +7,14 @@ class Servicio {
     String nombre
     String descripcion
     Empresa empresa
-    Set origenes
-    Set destinos
+    Set transacciones
     Date dateCreated
     Date lastUpdated
     String tags
 
     static belongsTo = [Empresa]
 
-    static hasMany = [origenes: Componente, destinos: Componente]
-
-    static mappedBy = [origenes:'origen', destinos: 'destino']
+    static hasMany = [transacciones: ServicioTransaccion]
 
     static constraints = {
         nombre maxSize:64, blank:false, unique:'empresa'
