@@ -1,6 +1,6 @@
 package inventario
 
-class CancelacionAlmacen {//implements java.io.Serializable {
+class CancelacionAlmacen implements Serializable {
     String folio
     String comentarios
     Entrada entrada

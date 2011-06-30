@@ -8,7 +8,6 @@ class TipoCliente implements java.io.Serializable {
     String nombre
     String descripcion
     BigDecimal margenUtilidad = new BigDecimal("0.20")
-    Boolean base = false
     Empresa empresa
 
     static belongsTo = Empresa

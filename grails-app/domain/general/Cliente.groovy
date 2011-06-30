@@ -1,10 +1,6 @@
 package general
 
-/**
- *
- * @author jdmr
- */
-class Cliente implements java.io.Serializable {
+class Cliente implements Serializable {
     String nombre
     String nombreCompleto
     String rfc
@@ -14,7 +10,6 @@ class Cliente implements java.io.Serializable {
     String fax
     String contacto
     String correo
-    Boolean base = false
     Empresa empresa
     TipoCliente tipoCliente
 

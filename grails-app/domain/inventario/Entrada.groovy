@@ -2,7 +2,7 @@ package inventario
 
 import general.Proveedor
 
-class Entrada {//implements java.io.Serializable {
+class Entrada implements Serializable {
     String folio
     String factura
     Date fechaFactura
@@ -11,22 +11,19 @@ class Entrada {//implements java.io.Serializable {
     BigDecimal iva = new BigDecimal("0.00")
     BigDecimal total = new BigDecimal("0.00")
     Boolean devolucion = false
-//    Estatus estatus
     String estatus = 'ABIERTA'
-//    Boolean pendiente = false
-        //en el estatus se podra ver
+    //Boolean pendiente = false
+    //en el estatus se podra ver
     Proveedor proveedor
     Almacen almacen
     Date dateCreated
     Date lastUpdated
     Set lotes
     BigDecimal totalFactura = new BigDecimal("0")
-//    Boolean facturada = false
-        //en el estatus se podra ver
+    Boolean facturada = false
     FacturaAlmacen facturaAlmacen
 
-//    static transients = ['totalFactura']
-        //por lo de serializable
+    static transients = ['totalFactura']
 
     static belongsTo = [Proveedor, Almacen, FacturaAlmacen]
 
@@ -93,7 +90,7 @@ class Entrada {//implements java.io.Serializable {
             filtro = "%$filtro%"
             ilike 'folio', filtro
             eq 'devolucion', true
-//            eq 'facturada', false
+            eq 'facturada', false
             almacen {
                 idEq(almacenId)
             }
