@@ -11,7 +11,8 @@
 		<a href="#list-poliza" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/>&nbsp;&gt;</a></li>
+				<li><g:link class="list" controller="contabilidad"><g:message code="contabilidad.label" default="Contabilidad" />&nbsp;&gt;</g:link></li>
 				<li><g:link class="create" action="nuevaIngreso"><g:message code="poliza.nueva.ingreso.label" args="[entityName]" /></g:link></li>
 				<li><g:link class="create" action="nuevaEgreso"><g:message code="poliza.nueva.egreso.label" args="[entityName]" /></g:link></li>
 				<li><g:link class="create" action="nuevaDiario"><g:message code="poliza.nueva.diario.label" args="[entityName]" /></g:link></li>

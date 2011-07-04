@@ -11,7 +11,8 @@
 		<a href="#list-cuenta" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/>&nbsp;&gt;</a></li>
+				<li><g:link class="list" controller="contabilidad"><g:message code="contabilidad.label" default="Contabilidad" />&nbsp;&gt;</g:link></li>
 			</ul>
 		</div>
 		<div id="list-cuenta" class="content scaffold-list" role="main">
