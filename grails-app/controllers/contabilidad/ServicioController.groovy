@@ -4,7 +4,7 @@ import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import general.Tag
 
-@Secured(['ROLE_USER'])
+@Secured(['ROLE_EMP'])
 class ServicioController {
 
     def springSecurityService
@@ -57,7 +57,16 @@ class ServicioController {
             redirect(action: "lista")
         }
         else {
-            [servicio: servicio]
+            def origenes = [:]
+            def destinos = [:]
+            for(transaccion in servicio.transacciones) {
+                def x = obtieneMovimientos(transaccion.origenes)
+                def y = obtieneMovimientos(transaccion.destinos)
+                origenes[transaccion.id] = x
+                destinos[transaccion.id] = y
+            }
+
+            [servicio: servicio, origenes: origenes, destinos: destinos]
         }
     }
 
@@ -69,7 +78,19 @@ class ServicioController {
             redirect(action: "lista")
         }
         else {
-            return [servicio: servicio]
+            def origenes = [:]
+            def destinos = [:]
+            for(transaccion in servicio.transacciones) {
+                def x = obtieneMovimientos(transaccion.origenes)
+                def y = obtieneMovimientos(transaccion.destinos)
+                origenes[transaccion.id] = x
+                destinos[transaccion.id] = y
+            }
+
+            log.debug("Origenes: $origenes")
+            log.debug("Destinos: $destinos")
+
+            return [servicio: servicio, origenes: origenes, destinos: destinos]
         }
     }
 
@@ -103,7 +124,15 @@ class ServicioController {
                 redirect(action: "ver", id: servicio.id)
             }
             else {
-                render(view: "edita", model: [servicio: servicio])
+                def origenes = [:]
+                def destinos = [:]
+                for(transaccion in servicio.transacciones) {
+                    def x = obtieneMovimientos(transaccion.origenes)
+                    def y = obtieneMovimientos(transaccion.destinos)
+                    origenes[transaccion.id] = x
+                    destinos[transaccion.id] = y
+                }
+                render(view: "edita", model: [servicio: servicio, origenes: origenes, destinos:destinos])
             }
         }
         else {
@@ -136,4 +165,40 @@ class ServicioController {
         def usuario = springSecurityService.currentUser
         render Tag.buscaPorFiltro("%${params.term}%",usuario.empresa.organizacion.id).list([max:10])*.nombre as JSON
     }
+
+    def obtieneMovimientos = { lista ->
+		def resultado = []
+		def cuentas = [:] as TreeMap
+		def movimientos = [:] as TreeMap
+		for(movimiento in lista) {
+			def cuenta = cuentas[movimiento.cuenta.id]
+			if (!cuenta) {
+				cuenta = [movimiento.cuenta, new BigDecimal('0')]
+				cuentas[movimiento.cuenta.id] = cuenta
+			}
+			cuenta[1] = cuenta[1].add(movimiento.importe)
+			
+			def mov = movimientos[movimiento.cuenta.id]
+			if (!mov) {
+				movimientos[movimiento.cuenta.id] = []
+			}
+			movimientos[movimiento.cuenta.id] << movimiento
+		}
+		
+		for (id in cuentas.keySet()) {
+			def encabezado = cuentas[id]
+			if (encabezado[0].tieneAuxiliares) {
+				resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1], padre:true)
+                def size = movimientos[id].size()
+                def movimiento = movimientos[id][size-1]
+                movimiento.ultimo = true
+				resultado.addAll(movimientos[id])
+			} else {
+				resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1])
+			}
+		}
+
+        return resultado
+    }
+
 }

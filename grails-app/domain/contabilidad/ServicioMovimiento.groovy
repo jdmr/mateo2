@@ -1,11 +1,12 @@
 package contabilidad
 
-class ServicioMovimiento {
+class ServicioMovimiento implements Serializable {
     BigDecimal importe = new BigDecimal('0')
     Cuenta cuenta
     Auxiliar auxiliar
     Date dateCreated
     Date lastUpdated
+    Boolean preguntar = false
     boolean padre = false
     boolean ultimo = false
     ServicioTransaccion origen

@@ -2,7 +2,7 @@ package contabilidad
 
 import general.Empresa
 
-class Servicio {
+class Servicio implements Serializable {
 
     String nombre
     String descripcion

@@ -141,7 +141,21 @@ class PolizaController {
                         redirect(action: "ver", id: poliza.id)
                     }
                     else {
-                        render(view: "edita", model: [poliza: poliza])
+                        def origenes = [:]
+                        def destinos = [:]
+                        for(transaccion in poliza.transacciones) {
+                            def x = obtieneMovimientos(transaccion.origenes)
+                            def y = obtieneMovimientos(transaccion.destinos)
+                            origenes[transaccion.id] = x
+                            destinos[transaccion.id] = y
+                        }
+                        if (poliza.tipo == 'INGRESOS') {
+                            render(view:'editaIngreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                        } else if (poliza.tipo == 'EGRESOS') {
+                            render(view:'editaEgreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                        } else if (poliza.tipo == 'DIARIO') {
+                            render(view:'editaDiario',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                        }
                     }
                 } else {
                     flash.message = message(code: 'poliza.cerrada.editar.message', args: [poliza.folio])
@@ -179,7 +193,21 @@ class PolizaController {
                     redirect(action: "ver", id: poliza.id)
                 }
                 else {
-                    render(view: "edita", model: [poliza: poliza])
+                    def origenes = [:]
+                    def destinos = [:]
+                    for(transaccion in poliza.transacciones) {
+                        def x = obtieneMovimientos(transaccion.origenes)
+                        def y = obtieneMovimientos(transaccion.destinos)
+                        origenes[transaccion.id] = x
+                        destinos[transaccion.id] = y
+                    }
+                    if (poliza.tipo == 'INGRESOS') {
+                        render(view:'editaIngreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                    } else if (poliza.tipo == 'EGRESOS') {
+                        render(view:'editaEgreso',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                    } else if (poliza.tipo == 'DIARIO') {
+                        render(view:'editaDiario',model:[poliza:poliza, origenes: origenes, destinos: destinos])
+                    }
                 }
             }
             else {
