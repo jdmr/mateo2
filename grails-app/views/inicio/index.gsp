@@ -13,9 +13,11 @@
             <div class="nav" role="navigation">
                 <ul>
                     <li><g:link class="list" controller="contabilidad" ><g:message code="contabilidad.label" default="Contabilidad" /></g:link></li>
+                    <li><g:link class="list" controller="inventario" ><g:message code="inventario.label" default="Inventario" /></g:link></li>
+                    <li><g:link class="list" controller="admin" ><g:message code="admin.label" default="Admin" /></g:link></li>
                 </ul>
             </div>
-            <div class="content" style="padding:0 25px;">
+            <div class="content" style="padding:10px 25px;">
                 <h1 style="padding:0;margin:0;">Bienvenido a SUMA</h1>
                 <p>Congratulations, you have successfully started your first Grails application! At the moment
                 this is the default page, feel free to modify it to either redirect to a controller or display whatever

@@ -11,7 +11,8 @@
 		<a href="#list-producto" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/>&nbsp;&gt;</a></li>
+				<li><g:link class="list" controller="inventario"><g:message code="inventario.label" default="Inventario" />&nbsp;&gt;</g:link></li>
 				<li><g:link class="create" action="nuevo"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
@@ -26,7 +27,7 @@
 					
 						<g:sortableColumn property="codigo" title="${message(code: 'producto.codigo.label', default: 'Codigo')}" />
 
-                                                <g:sortableColumn property="sku" title="${message(code: 'producto.sku.label', default: 'Sku')}" />
+                        <g:sortableColumn property="sku" title="${message(code: 'producto.sku.label', default: 'Sku')}" />
 
 						<g:sortableColumn property="nombre" title="${message(code: 'producto.nombre.label', default: 'Nombre')}" />
 					

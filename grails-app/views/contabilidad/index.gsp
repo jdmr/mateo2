@@ -8,11 +8,11 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/>&nbsp;&gt;</a></li>
-				<li><g:link class="list" controller="poliza"><g:message code="poliza.label" /></g:link></li>
-				<li><g:link class="list" controller="auxiliar"><g:message code="auxiliar.label" /></g:link></li>
-				<li><g:link class="list" controller="cuenta"><g:message code="cuenta.label" /></g:link></li>
-				<li><g:link class="list" controller="libro"><g:message code="libro.label" /></g:link></li>
-				<li><g:link class="list" controller="ejercicio"><g:message code="ejercicio.label" /></g:link></li>
+				<li><g:link class="list" controller="poliza"><g:message code="poliza.list.label" /></g:link></li>
+				<li><g:link class="list" controller="auxiliar"><g:message code="auxiliar.list.label" /></g:link></li>
+				<li><g:link class="list" controller="cuenta"><g:message code="cuenta.list.label" /></g:link></li>
+				<li><g:link class="list" controller="libro"><g:message code="libro.list.label" /></g:link></li>
+				<li><g:link class="list" controller="ejercicio"><g:message code="ejercicio.list.label" /></g:link></li>
 			</ul>
 		</div>
         <div class="content">
