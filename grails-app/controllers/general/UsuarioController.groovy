@@ -161,10 +161,13 @@ class UsuarioController {
 
         def empresas
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            log.debug("Buscando empresas a nivel administrador")
             empresas = Empresa.findAll("from Empresa e order by e.organizacion.nombre, e.nombre")
         } else if(SpringSecurityUtils.ifAnyGranted('ROLE_ORG')) {
-            empresas = Empresa.findAll("from Empresa e where e.organizacion = :organizacion order by e.organizacion.nombre, e.nombre", [organizacion:usuario.empresa])
+            log.debug("Buscando empresas a nivel organizacion")
+            empresas = Empresa.findAll("from Empresa e where e.organizacion = :organizacion order by e.organizacion.nombre, e.nombre", [organizacion:usuario.empresa.organizacion])
         } else {
+            log.debug("Asignando empresa")
             empresas = [usuario.empresa]
         }
         
@@ -190,9 +193,13 @@ class UsuarioController {
                 }
                 params.remove('password')
                 usuario.properties = params
-                def currentUser = springSecurityService.currentUser
-                usuario.empresa = currentUser.empresa
+                // TODO: Necesitamos validar por rol a donde se puede cambiar el usuario
+                // para no tener un hoyo de seguridad de que un usuario se pueda cambiar
+                // a una empresa / organizacion no permitida
                 if (!usuario.hasErrors() && usuario.save(flush: true)) {
+                    session.organizacion = usuario.empresa.organizacion
+                    session.empresa = usuario.empresa
+
                     flash.message = message(code: 'usuario.perfil.updated.message', args: [usuario.username])
                     redirect(uri: "/")
                 }

@@ -7,9 +7,6 @@
 	<body>
 		<a href="#page-body" class="skip"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div id="page-body" role="main">
-			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
-			</g:if>
             <div class="nav" role="navigation">
                 <ul>
                     <li><g:link class="list" controller="contabilidad" ><g:message code="contabilidad.label" default="Contabilidad" /></g:link></li>
@@ -17,6 +14,9 @@
                     <li><g:link class="list" controller="admin" ><g:message code="admin.label" default="Admin" /></g:link></li>
                 </ul>
             </div>
+			<g:if test="${flash.message}">
+			<div class="message" role="status">${flash.message}</div>
+			</g:if>
             <div class="content" style="padding:10px 25px;">
                 <h1 style="padding:0;margin:0;">Bienvenido a SUMA</h1>
                 <p>Congratulations, you have successfully started your first Grails application! At the moment

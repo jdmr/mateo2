@@ -36,6 +36,8 @@ class EmpresaController {
                 usuario.empresa = empresa
                 usuario.save()
 
+                session.empresa = empresa
+
                 flash.message = message(code: 'default.created.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresa.nombre])
                 redirect(action: "ver", id: empresa.id)
             }
@@ -87,6 +89,8 @@ class EmpresaController {
                     // Actualizando empresa del usuario
                     usuario.empresa = empresa
                     usuario.save()
+
+                    session.empresa = empresa
 
                     flash.message = message(code: 'default.updated.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresa.nombre])
                     redirect(action: "ver", id: empresa.id)

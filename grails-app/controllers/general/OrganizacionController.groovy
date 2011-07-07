@@ -7,6 +7,8 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 @Secured(['ROLE_ADMIN'])
 class OrganizacionController {
 
+    def springSecurityService
+
     static allowedMethods = [crea: "POST", actualiza: "POST", elimina: "POST"]
 
     def index = {
@@ -34,6 +36,13 @@ class OrganizacionController {
                     , nombreCompleto : 'EMPRESA'
                     , organizacion : organizacion
                 ).save(flush:true)
+
+                def usuario = springSecurityService.currentUser
+                usuario.empresa = empresa
+                usuario.save()
+                session.organizacion = organizacion
+                session.empresa = empresa
+
                 flash.message = message(code: 'default.created.message', args: [message(code: 'organizacion.label', default: 'Organizacion'), organizacion.nombre])
                 redirect(controller:'empresa', action: "edita", id: empresa.id)
             }

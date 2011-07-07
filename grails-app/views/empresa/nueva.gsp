@@ -38,7 +38,7 @@
 		</div>
         <r:script>
             $(document).ready(function() {
-                $('#nombre').focus();
+                $('#codigo').focus();
             });
         </r:script>
 	</body>
