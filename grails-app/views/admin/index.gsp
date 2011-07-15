@@ -11,6 +11,7 @@
 				<li><g:link class="list" controller="cliente"><g:message code="cliente.list.label" /></g:link></li>
 				<li><g:link class="list" controller="tipoCliente"><g:message code="tipoCliente.list.label" /></g:link></li>
 				<li><g:link class="list" controller="proveedor"><g:message code="proveedor.list.label" /></g:link></li>
+				<li><g:link class="list" controller="usuario"><g:message code="usuario.list.label" /></g:link></li>
 				<li><g:link class="list" controller="empresa"><g:message code="empresa.list.label" /></g:link></li>
 				<li><g:link class="list" controller="organizacion"><g:message code="organizacion.list.label" /></g:link></li>
 			</ul>

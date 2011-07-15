@@ -37,16 +37,7 @@ class UsuarioController {
             def currentUser = springSecurityService.currentUser
             usuario.empresa = currentUser.empresa
             if (usuario.save(flush: true)) {
-                def roles = [] as Set
-                if (params.ROLE_ADMIN) {
-                    roles << Rol.findByAuthority('ROLE_ADMIN')
-                } else if (params.ROLE_ORG) {
-                    roles << Rol.findByAuthority('ROLE_ORG')
-                } else if (params.ROLE_EMP) {
-                    roles << Rol.findByAuthority('ROLE_EMP')
-                } else {
-                    roles << Rol.findByAuthority('ROLE_USER')
-                }
+                def roles = asignaRoles(params)
                 for(rol in roles) {
                     UsuarioRol.create(usuario, rol, false)
                 }
@@ -106,17 +97,8 @@ class UsuarioController {
                 def currentUser = springSecurityService.currentUser
                 usuario.empresa = currentUser.empresa
                 if (!usuario.hasErrors() && usuario.save(flush: true)) {
-                    def roles = [] as Set
-                    if (params.ROLE_ADMIN) {
-                        roles << Rol.findByAuthority('ROLE_ADMIN')
-                    } else if (params.ROLE_ORG) {
-                        roles << Rol.findByAuthority('ROLE_ORG')
-                    } else if (params.ROLE_EMP) {
-                        roles << Rol.findByAuthority('ROLE_EMP')
-                    } else {
-                        roles << Rol.findByAuthority('ROLE_USER')
-                    }
                     UsuarioRol.removeAll(usuario)
+                    def roles = asignaRoles(params)
                     for(rol in roles) {
                         UsuarioRol.create(usuario, rol, false)
                     }
@@ -215,25 +197,29 @@ class UsuarioController {
     }
 
     def obtieneListaDeRoles = { usuario ->
+        log.debug "Obteniendo lista de roles"
         def roles = Rol.list()
 
         def rolesFiltrados = [] as Set
-        //def creador = usuarioService.obtiene(springSecurityService.principal().id)
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            log.debug "Roles para ADMIN"
             rolesFiltrados = roles
         } else if(SpringSecurityUtils.ifAnyGranted('ROLE_ORG')) {
+            log.debug "Roles para ORG"
             for(rol in roles) {
                 if (!rol.authority.equals('ROLE_ADMIN') && !rol.authority.equals('ROLE_ORG')) {
                     rolesFiltrados << rol
                 }
             }
         } else if(SpringSecurityUtils.ifAnyGranted('ROLE_EMP')) {
+            log.debug "Roles para EMP"
             for(rol in roles) {
                 if (rol.authority.equals('ROLE_USER')) {
                     rolesFiltrados << rol
                 }
             }
         }
+        roles = rolesFiltrados
         roles.sort { r1, r2 ->
             r1.authority <=> r2.authority
         }
