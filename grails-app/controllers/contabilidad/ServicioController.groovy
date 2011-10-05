@@ -15,11 +15,11 @@ class ServicioController {
         redirect(action: "lista", params: params)
     }
 
-	def lista = {
-		params.max = Math.min(params.max ? params.int('max') : 10, 100)
+    def lista = {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         def usuario = springSecurityService.currentUser
-		[servicios: Servicio.findAllByEmpresa(usuario.empresa, params), totalDeServicios: Servicio.countByEmpresa(usuario.empresa)]
-	}
+        [servicios: Servicio.findAllByEmpresa(usuario.empresa, params), totalDeServicios: Servicio.countByEmpresa(usuario.empresa)]
+    }
 
     def nuevo = {
         def servicio = new Servicio()
@@ -167,36 +167,36 @@ class ServicioController {
     }
 
     def obtieneMovimientos = { lista ->
-		def resultado = []
-		def cuentas = [:] as TreeMap
-		def movimientos = [:] as TreeMap
-		for(movimiento in lista) {
-			def cuenta = cuentas[movimiento.cuenta.id]
-			if (!cuenta) {
-				cuenta = [movimiento.cuenta, new BigDecimal('0')]
-				cuentas[movimiento.cuenta.id] = cuenta
-			}
-			cuenta[1] = cuenta[1].add(movimiento.importe)
+        def resultado = []
+        def cuentas = [:] as TreeMap
+        def movimientos = [:] as TreeMap
+        for(movimiento in lista) {
+            def cuenta = cuentas[movimiento.cuenta.id]
+            if (!cuenta) {
+                cuenta = [movimiento.cuenta, new BigDecimal('0')]
+                cuentas[movimiento.cuenta.id] = cuenta
+            }
+            cuenta[1] = cuenta[1].add(movimiento.importe)
 			
-			def mov = movimientos[movimiento.cuenta.id]
-			if (!mov) {
-				movimientos[movimiento.cuenta.id] = []
-			}
-			movimientos[movimiento.cuenta.id] << movimiento
-		}
+            def mov = movimientos[movimiento.cuenta.id]
+            if (!mov) {
+                movimientos[movimiento.cuenta.id] = []
+            }
+            movimientos[movimiento.cuenta.id] << movimiento
+        }
 		
-		for (id in cuentas.keySet()) {
-			def encabezado = cuentas[id]
-			if (encabezado[0].tieneAuxiliares) {
-				resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1], padre:true)
+        for (id in cuentas.keySet()) {
+            def encabezado = cuentas[id]
+            if (encabezado[0].tieneAuxiliares) {
+                resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1], padre:true)
                 def size = movimientos[id].size()
                 def movimiento = movimientos[id][size-1]
                 movimiento.ultimo = true
-				resultado.addAll(movimientos[id])
-			} else {
-				resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1])
-			}
-		}
+                resultado.addAll(movimientos[id])
+            } else {
+                resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1])
+            }
+        }
 
         return resultado
     }

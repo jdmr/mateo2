@@ -64,6 +64,7 @@ class ServicioTransaccionController {
                     }
                 }
 
+                log.debug("Importe: $params.importe")
                 if (params.importe) {
                     if (params.cuentaId) {
                         def cuenta = Cuenta.findByOrganizacionAndId(usuario.empresa.organizacion, params.cuentaId)
@@ -82,15 +83,19 @@ class ServicioTransaccionController {
                                 auxiliar = Auxiliar.findByOrganizacionAndId(usuario.empresa.organizacion, params.auxiliarId)
                                 movimiento.auxiliar = auxiliar
                             }
+                            log.debug("Importe: $importe | esDebe: ${params.esDebe}")
                             if (params.esDebe != null) {
+                                log.debug("TEST1")
                                 // Valido si esta distribuyendo los pagos
                                 // Si quiere distribuir algo que no esta pagado
                                 // no lo deja
                                 if (transaccion.importe >= importe) {
+                                    log.debug("TEST2")
                                     // Si el importe de la distribucion es igual
                                     // a lo que llevo en la transaccion
                                     // no importan los origenes, solo crea uno nuevo
                                     if (transaccion.importe == importe) {
+                                        log.debug("TEST3")
                                         def origenes = new ArrayList(transaccion.origenes)
                                         transaccion.origenes.clear()
                                         for(origen in origenes) {
@@ -98,6 +103,7 @@ class ServicioTransaccionController {
                                         }
                                         transaccion.addToOrigenes(movimiento)
                                     } else {
+                                        log.debug("TEST4")
                                         // Si la cantidad es menor, entonces hay que distribuirlos
                                         // Primero valido si ya existe entre los movimientos
                                         // alguno a la misma cuenta, de ser asi, le sumo el importe
@@ -105,7 +111,7 @@ class ServicioTransaccionController {
                                         def x
                                         for(origen in transaccion.origenes) {
                                             if ((movimiento.auxiliar && origen.auxiliar == movimiento.auxiliar)
-                                                    || (!movimiento.auxiliar && movimiento.cuenta == origen.cuenta)) {
+                                                || (!movimiento.auxiliar && movimiento.cuenta == origen.cuenta)) {
                                                 x = origen
                                             }
                                         }
@@ -139,6 +145,7 @@ class ServicioTransaccionController {
                                             }
                                         }
                                     }
+                                    log.debug("Guardando transaccion")
                                     transaccion.save(flush:true)
 
                                 } else {
@@ -217,36 +224,36 @@ class ServicioTransaccionController {
     }
 
     def obtieneMovimientos = { lista ->
-		def resultado = []
-		def cuentas = [:] as TreeMap
-		def movimientos = [:] as TreeMap
-		for(movimiento in lista) {
-			def cuenta = cuentas[movimiento.cuenta.id]
-			if (!cuenta) {
-				cuenta = [movimiento.cuenta, new BigDecimal('0')]
-				cuentas[movimiento.cuenta.id] = cuenta
-			}
-			cuenta[1] = cuenta[1].add(movimiento.importe)
+        def resultado = []
+        def cuentas = [:] as TreeMap
+        def movimientos = [:] as TreeMap
+        for(movimiento in lista) {
+            def cuenta = cuentas[movimiento.cuenta.id]
+            if (!cuenta) {
+                cuenta = [movimiento.cuenta, new BigDecimal('0')]
+                cuentas[movimiento.cuenta.id] = cuenta
+            }
+            cuenta[1] = cuenta[1].add(movimiento.importe)
 			
-			def mov = movimientos[movimiento.cuenta.id]
-			if (!mov) {
-				movimientos[movimiento.cuenta.id] = []
-			}
-			movimientos[movimiento.cuenta.id] << movimiento
-		}
+            def mov = movimientos[movimiento.cuenta.id]
+            if (!mov) {
+                movimientos[movimiento.cuenta.id] = []
+            }
+            movimientos[movimiento.cuenta.id] << movimiento
+        }
 		
-		for (id in cuentas.keySet()) {
-			def encabezado = cuentas[id]
-			if (encabezado[0].tieneAuxiliares) {
-				resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1], padre:true)
+        for (id in cuentas.keySet()) {
+            def encabezado = cuentas[id]
+            if (encabezado[0].tieneAuxiliares) {
+                resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1], padre:true)
                 def size = movimientos[id].size()
                 def movimiento = movimientos[id][size-1]
                 movimiento.ultimo = true
-				resultado.addAll(movimientos[id])
-			} else {
-				resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1])
-			}
-		}
+                resultado.addAll(movimientos[id])
+            } else {
+                resultado << new ServicioMovimiento(cuenta:encabezado[0],importe:encabezado[1])
+            }
+        }
 
         return resultado
     }
